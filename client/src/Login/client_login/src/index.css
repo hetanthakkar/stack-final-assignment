@@ -1,13 +1,23 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=Signika:wght@300..700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    font-family: "Signika", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400; /* Set your desired default weight, e.g., 400 for regular */
+    font-style: normal;
+    font-variation-settings: "GRAD" 0;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+* > * {
+    font-family: inherit; /* Inherit the font-family for all children elements */
+    font-weight: inherit; /* Inherit the font-weight for all children elements */
 }
+
+body{
+    background: #dcdce6;
+    background-image: url('./assets/Background.png');
+}   
