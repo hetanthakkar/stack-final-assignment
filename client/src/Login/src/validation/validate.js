@@ -1,11 +1,19 @@
 import toast from 'react-hot-toast';
+import { authenticate } from './helper';
 
 export async function usernameValidate(errors, values) {
+  if(values.username){
+    const {status} = await authenticate(values.username);
+    if(status !== 200){
+      errors.exist = toast.error('User does not Exist...!')
+    }
+  }
+  else{
   if (!values.username) {
     errors.username = toast.error('Please enter username.');
   } else if (values.username.includes(' ')) {
     errors.username = toast.error('Username cannot contain spaces.');
-  }
+  }}
 }
 
 export async function passwordValidate(errors, values) {
