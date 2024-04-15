@@ -8,25 +8,27 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 const QuestionBody = ({ views, text, askby, meta }) => {
   return (
     <div className="question-body-container">
-      <div className="comment-votes">
-        <button onClick={() => console.log("comment")}>
+      <div className="comment-votes-1">
+        <button className="upvote" onClick={() => console.log("comment")}>
           <FontAwesomeIcon icon={faThumbsUp} />
         </button>
-        <button onClick={() => console.log("comment")}>
+        <button className="downvote" onClick={() => console.log("comment")}>
           <FontAwesomeIcon icon={faThumbsDown} />
         </button>
       </div>
-      <div className="question-header">
-        <div className="question-views">
-          <i className="fas fa-eye"></i>
-          <span>{views} views</span>
+      <div className="question-details">
+        <div className="question-header">
+          <div className="question-views">
+            <i className="fas fa-eye"></i>
+            <span>{views} views</span>
+          </div>
+          <div className="question-author-meta">
+            <div className="question-author">{askby}</div>
+            <div className="question-meta">asked {meta}</div>
+          </div>
         </div>
-        <div className="question-author-meta">
-          <div className="question-author">{askby}</div>
-          <div className="question-meta">asked {meta}</div>
-        </div>
+        <div className="question-content">{handleHyperlink(text)}</div>
       </div>
-      <div className="question-content">{handleHyperlink(text)}</div>
     </div>
   );
 };

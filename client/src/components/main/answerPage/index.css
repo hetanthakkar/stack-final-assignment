@@ -92,6 +92,12 @@
   font-weight: bold;
 }
 
+.main_div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
 .comment-date {
   font-size: 14px;
   color: #888;
@@ -113,4 +119,19 @@
 }
 .comment-indented {
   margin-left: 20px;
+}
+.comment-votes-1 {
+  display: flex;
+  flex-direction: column;
+  width: 7%;
+}
+
+.comment-votes-1 button {
+  flex-grow: 1;
+  margin: 5px; /* Adjust margin as needed */
+}
+
+.answer-container {
+  display: flex;
+  flex-direction: column;
 }
