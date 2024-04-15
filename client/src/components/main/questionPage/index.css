@@ -1,5 +1,8 @@
 .btns {
-    margin-right: 15%;
+    margin-right: 40px;;
+    display: flex;
+    width: 400px;
+    justify-content: space-between;
 }
 
 .question_list:last-child {
