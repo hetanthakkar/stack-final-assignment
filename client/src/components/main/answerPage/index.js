@@ -5,8 +5,10 @@ import AnswerHeader from "./header";
 import "./index.css";
 import QuestionBody from "./questionBody";
 import { getQuestionById } from "../../../services/questionService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faThumbsDown, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 
-// Component for the Answers page
 const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
   const [question, setQuestion] = useState({});
   const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
@@ -51,6 +53,8 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
         text: questionComment,
         author: "You", // You can change this to the actual author
         date: new Date().toLocaleString(), // Current date and time
+        upvotes: 0,
+        downvotes: 0,
       };
       setQuestionComments([...questionComments, newComment]);
       setQuestionComment("");
@@ -65,6 +69,8 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
         text: answerComment,
         author: "You", // You can change this to the actual author
         date: new Date().toLocaleString(), // Current date and time
+        upvotes: 0,
+        downvotes: 0,
       };
       const updatedAnswers = [...question.answers];
       updatedAnswers[currentAnswerIndex].comments = [
@@ -84,6 +90,16 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
     };
     fetchData().catch((e) => console.log(e));
   }, [qid]);
+
+  const handleUpvote = (type, id) => {
+    // Implement upvoting logic here
+    console.log(`Upvoted ${type} with id ${id}`);
+  };
+
+  const handleDownvote = (type, id) => {
+    // Implement downvoting logic here
+    console.log(`Downvoted ${type} with id ${id}`);
+  };
 
   return (
     <>
@@ -129,6 +145,14 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
               <div className="comment-header">
                 <p className="comment-author">{c.author}</p>
                 <p className="comment-date">{c.date}</p>
+                <div className="comment-votes">
+                  <button onClick={() => handleUpvote("comment", c.id)}>
+                    <FontAwesomeIcon icon={faThumbsUp} />
+                  </button>
+                  <button onClick={() => handleDownvote("comment", c.id)}>
+                    <FontAwesomeIcon icon={faThumbsDown} />
+                  </button>
+                </div>
               </div>
               <p className="comment-text">{c.text}</p>
             </div>
@@ -143,11 +167,20 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
           question.answers &&
           question.answers.map((a, idx) => (
             <div key={idx} className="answer-container">
+              <div className="comment-votes">
+                <button onClick={() => handleUpvote("comment", 10)}>
+                  <FontAwesomeIcon icon={faThumbsUp} />
+                </button>
+                <button onClick={() => handleDownvote("comment", 10)}>
+                  <FontAwesomeIcon icon={faThumbsDown} />
+                </button>
+              </div>
               <Answer
                 text={a.text}
                 ansBy={a.ans_by}
                 meta={getMetaData(new Date(a.ans_date_time))}
               />
+
               <div className="comments-section">
                 <button
                   className="bluebtn ansButton"
@@ -162,6 +195,18 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
                         <div className="comment-header">
                           <p className="comment-author">{c.author}</p>
                           <p className="comment-date">{c.date}</p>
+                          <div className="comment-votes">
+                            <button
+                              onClick={() => handleUpvote("comment", c.id)}
+                            >
+                              <FontAwesomeIcon icon={faThumbsUp} />
+                            </button>
+                            <button
+                              onClick={() => handleDownvote("comment", c.id)}
+                            >
+                              <FontAwesomeIcon icon={faThumbsDown} />
+                            </button>
+                          </div>
                         </div>
                         <p className="comment-text">{c.text}</p>
                       </div>
