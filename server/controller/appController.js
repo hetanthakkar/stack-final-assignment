@@ -37,6 +37,7 @@ async function register(req, res) {
     const existingUser = await UserModel.findOne({
       $or: [{ username }, { email }],
     });
+    console.log("ecisting", existingUser);
     if (existingUser) {
       return res.status(400).json({ error: "User already exists" });
     }

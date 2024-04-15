@@ -10,7 +10,6 @@ import { useAuthStore } from "../../store/store";
 export default function Username() {
   const setUsername = useAuthStore((state) => state.setUsername);
   // const username = useAuthStore(state => state.auth.uetUsername);
-
   const navigate = useNavigate();
 
   // useEffect(() => console.log(username))
@@ -31,10 +30,11 @@ export default function Username() {
     onSubmit: async (values) => {
       // console.log(values);
       setUsername(values.username);
+      navigate("/home");
     },
   });
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!formik.values.username && !formik.values.password) {
       return toast.error("Please enter username and password.");
@@ -45,7 +45,10 @@ export default function Username() {
     if (!formik.values.password) {
       return toast.error("Please enter password.");
     }
-    formik.handleSubmit();
+    await toast.success("Logged in");
+    setTimeout(() => {
+      formik.handleSubmit();
+    }, 1000);
   };
 
   return (
