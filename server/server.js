@@ -1,18 +1,40 @@
-// Application server
+// Run this script to launch the server.
+// The server should run on localhost port 8000.
+// This is where you should start writing server-side code for this application.
 
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
-const { MONGO_URL, port } = require("./config");
+const MONGO_URL = "mongodb://127.0.0.1:27017/fake_so";
+const CLIENT_URL = "http://localhost:3000";
+const port = 8000;
 
 mongoose.connect(MONGO_URL);
 
 const app = express();
 
-app.get("/", (_, res) => {
-    res.send("Fake SO Server Dummy Endpoint");
+app.use(
+    cors({
+        credentials: true,
+        origin: [CLIENT_URL],
+    })
+);
+
+app.use(express.json());
+
+app.get("", (req, res) => {
+    res.send("hello world");
     res.end();
 });
+
+const questionController = require("./controller/question");
+const tagController = require("./controller/tag");
+const answerController = require("./controller/answer");
+
+app.use("/question", questionController);
+app.use("/tag", tagController);
+app.use("/answer", answerController);
 
 let server = app.listen(port, () => {
     console.log(`Server starts at http://localhost:${port}`);
@@ -24,3 +46,5 @@ process.on("SIGINT", () => {
     console.log("Server closed. Database instance disconnected");
     process.exit(0);
 });
+
+module.exports = server
