@@ -11,7 +11,7 @@ const QuestionHeader = ({
         <div>
             <div className="space_between right_padding">
                 <div className="bold_title">{title_text}</div>
-                <button
+                <button 
                     className="bluebtn"
                     onClick={() => {
                         handleNewQuestion();

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import avatar from "../../public/profile.png";
 import "../../Login-Stylesheet/Username.css";
 import { Toaster, toast } from "react-hot-toast";
@@ -8,6 +8,8 @@ import { registerValidate } from "../../validation/validate";
 import saveFile from "../../validation/imageSave";
 
 export default function Register() {
+  const navigate = useNavigate();
+
   const [file, setFile] = useState();
   const formik = useFormik({
     initialValues: {
@@ -21,6 +23,7 @@ export default function Register() {
     onSubmit: async (values) => {
       values = await Object.assign(values, { profile: file || " " });
       console.log(values);
+      navigate("/home");
     },
   });
 
@@ -29,7 +32,7 @@ export default function Register() {
     setFile(image);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (
       !formik.values.username &&
@@ -55,7 +58,33 @@ export default function Register() {
       return toast.error("Please enter username.");
     }
     if (!formik.values.password) {
-      return toast.error("Please enter password.");
+      return toast.error("Please entejr password.");
+    }
+    try {
+      const response = await fetch("http://localhost:8000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: formik.values.username,
+          password: formik.values.password,
+          email: formik.values.email,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to register user");
+      }
+      toast.success("User registered successfully");
+
+      setTimeout(() => {
+        formik.handleSubmit();
+      }, 500); // 500 milliseconds delay
+      // formik.handleSubmit();
+    } catch (error) {
+      console.error("Error registering user:", error);
+      toast.error("Failed to register user. Please try again.");
     }
   };
 
