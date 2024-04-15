@@ -108,35 +108,17 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
         title={question && question.title}
         handleNewQuestion={handleNewQuestion}
       />
+      <div>
       <QuestionBody
         views={question && question.views}
         text={question && question.text}
         askby={question && question.asked_by}
         meta={question && getMetaData(new Date(question.ask_date_time))}
       />
-      <button className="bluebtn ansButton" onClick={openQuestionDialog}>
+      <div>
+      <div className="CommentForQuestion" onClick={openQuestionDialog}>
         Add Comment to Question
-      </button>
-      {isQuestionDialogOpen && (
-        <div className="comment_dialog">
-          <div className="comment_dialog_content">
-            <textarea
-              className="comment_textarea"
-              value={questionComment}
-              onChange={handleQuestionCommentChange}
-              placeholder="Enter your comment here..."
-            ></textarea>
-            <div className="comment_dialog_buttons">
-              <button className="cancel_button" onClick={closeQuestionDialog}>
-                Cancel
-              </button>
-              <button className="submit_button" onClick={submitQuestionComment}>
-                Submit
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
       {questionComments.length > 0 && (
         <div className="comments-section">
           <h3>Comments:</h3>
@@ -159,6 +141,29 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
           ))}
         </div>
       )}
+      </div>
+      </div>
+      {isQuestionDialogOpen && (
+        <div className="comment_dialog">
+          <div className="comment_dialog_content">
+            <textarea
+              className="comment_textarea"
+              value={questionComment}
+              onChange={handleQuestionCommentChange}
+              placeholder="Enter your comment here..."
+            ></textarea>
+            <div className="comment_dialog_buttons">
+              <button className="cancel_button" onClick={closeQuestionDialog}>
+                Cancel
+              </button>
+              <button className="submit_button" onClick={submitQuestionComment}>
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    
       <div className="answers-separator">
         Answers ({question.answers ? question.answers.length : 0})
       </div>
@@ -167,7 +172,8 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
           question.answers &&
           question.answers.map((a, idx) => (
             <div key={idx} className="answer-container">
-              <div className="comment-votes">
+              <div className="answersForQuestion">
+              <div className="comment-votes-1">
                 <button onClick={() => handleUpvote("comment", 10)}>
                   <FontAwesomeIcon icon={faThumbsUp} />
                 </button>
@@ -175,19 +181,17 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
                   <FontAwesomeIcon icon={faThumbsDown} />
                 </button>
               </div>
-              <Answer
+              <Answer className="CommentAnswer"
                 text={a.text}
                 ansBy={a.ans_by}
                 meta={getMetaData(new Date(a.ans_date_time))}
               />
+              
+              
+              </div>
 
               <div className="comments-section">
-                <button
-                  className="bluebtn ansButton"
-                  onClick={() => openAnswerDialog(idx)}
-                >
-                  Reply
-                </button>
+                <button className="ansButton" onClick={() => openAnswerDialog(idx)} >Reply</button>
                 {a.comments && a.comments.length > 0 && (
                   <>
                     {a.comments.map((c) => (
@@ -195,7 +199,7 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
                         <div className="comment-header">
                           <p className="comment-author">{c.author}</p>
                           <p className="comment-date">{c.date}</p>
-                          <div className="comment-votes">
+                          <div className="comment-votes-answers">
                             <button
                               onClick={() => handleUpvote("comment", c.id)}
                             >

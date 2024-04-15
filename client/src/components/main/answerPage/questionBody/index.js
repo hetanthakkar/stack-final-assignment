@@ -9,13 +9,14 @@ const QuestionBody = ({ views, text, askby, meta }) => {
   return (
     <div className="question-body-container">
       <div className="comment-votes">
-        <button onClick={() => console.log("comment")}>
+        <button className="upvote" onClick={() => console.log("comment")}>
           <FontAwesomeIcon icon={faThumbsUp} />
         </button>
-        <button onClick={() => console.log("comment")}>
+        <button className="downvote" onClick={() => console.log("comment")}>
           <FontAwesomeIcon icon={faThumbsDown} />
         </button>
       </div>
+      <div className="question-details">
       <div className="question-header">
         <div className="question-views">
           <i className="fas fa-eye"></i>
@@ -27,6 +28,7 @@ const QuestionBody = ({ views, text, askby, meta }) => {
         </div>
       </div>
       <div className="question-content">{handleHyperlink(text)}</div>
+      </div>
     </div>
   );
 };

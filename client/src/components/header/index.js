@@ -5,9 +5,9 @@ const Header = ({ search, setQuesitonPage }) => {
     const [val, setVal] = useState(search);
     return (
         <div id="header" className="header">
-            <div></div>
+            
             <div className="title">Fake Stack Overflow</div>
-            <input
+            <input className="searchbar"
                 id="searchBar"
                 placeholder="Search ..."
                 type="text"
@@ -22,6 +22,12 @@ const Header = ({ search, setQuesitonPage }) => {
                     }
                 }}
             />
+            <div className="Profile_signout">
+            <button>Profile</button>
+            <button>Sign Out</button>
+            </div>
+
+
         </div>
     );
 };

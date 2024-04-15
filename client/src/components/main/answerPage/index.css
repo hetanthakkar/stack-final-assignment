@@ -32,7 +32,7 @@
 
 .comment_textarea {
   width: 100%;
-  height: 100px;
+  /* height: 100px; */
   padding: 12px 20px;
   box-sizing: border-box;
   border: 2px solid #ccc;
@@ -69,9 +69,11 @@
 }
 
 .comments-section {
+  display: flex;
   margin-top: 24px;
   border-top: 1px solid #ccc;
   padding-top: 16px;
+  height: 100px
 }
 
 .comment {
@@ -100,6 +102,14 @@
 .comment-text {
   line-height: 1.4;
 }
+.CommentAnswer{
+  height: 100%;
+}
+.CommentForQuestion{
+  display: flex;
+  /* align-items: center; */
+  justify-content: center;
+}
 
 .answers-separator {
   margin-top: 24px;
@@ -113,4 +123,24 @@
 }
 .comment-indented {
   margin-left: 20px;
+}
+
+
+.answersForQuestion {
+  display: flex;
+}
+.comment-votes-1 {
+  display: flex;
+  flex-direction: column;
+  width: 7%
+}
+
+.comment-votes-1 button {
+  flex-grow: 1;
+  margin: 5px; /* Adjust margin as needed */
+}
+
+.answer-container{
+  display: flex;
+  flex-direction: column;
 }
