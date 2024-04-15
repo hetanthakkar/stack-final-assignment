@@ -23,7 +23,6 @@ export default function Register() {
     onSubmit: async (values) => {
       values = await Object.assign(values, { profile: file || " " });
       console.log(values);
-
       navigate("/home");
     },
   });
