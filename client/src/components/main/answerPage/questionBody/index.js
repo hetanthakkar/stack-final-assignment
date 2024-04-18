@@ -5,14 +5,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbsDown, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 // Component for the Question's Body
-const QuestionBody = ({ views, text, askby, meta }) => {
+const QuestionBody = ({
+  views,
+  text,
+  askby,
+  meta,
+  handleUpvote,
+  handleDownvote,
+}) => {
   return (
     <div className="question-body-container">
       <div className="comment-votes-1">
-        <button className="upvote" onClick={() => console.log("comment")}>
+        <button className="upvote" onClick={() => handleUpvote("question")}>
           <FontAwesomeIcon icon={faThumbsUp} />
         </button>
-        <button className="downvote" onClick={() => console.log("comment")}>
+        <button className="downvote" onClick={() => handleDownvote("question")}>
           <FontAwesomeIcon icon={faThumbsDown} />
         </button>
       </div>

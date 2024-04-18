@@ -20,11 +20,13 @@ router
   .route("/authenticate")
   .post(controller.verifyUser, (req, res) => res.end()); //authenticate the user
 router.route("/login").post(controller.verifyUser, controller.login); //login into the app
-
+router.route("/login").post(controller.verifyUser, controller.login); //login into the app
 /**
  * GET
  */
-router.route("/user/:username").get(controller.getUser); //username with the user
+router
+  .route("/user/:username")
+  .get(controller.validateBearerToken, controller.getUser); //username with the user
 router
   .route("/generateOTP")
   .get(controller.verifyUser, OTPLocalVariables, controller.generateOTP); //generate random OTP

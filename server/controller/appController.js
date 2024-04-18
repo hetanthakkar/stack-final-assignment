@@ -84,7 +84,7 @@ async function login(req, res) {
         userId: user._id,
         username: user.username,
       },
-      ENV.JWT_SECRET,
+      "Hetan",
       { expiresIn: "24h" }
     );
 
@@ -121,6 +121,25 @@ async function getUser(req, res) {
   } catch (error) {
     console.error("Error fetching user:", error);
     return res.status(404).send({ error: "Cannot Find the User Data...!" });
+  }
+}
+
+async function validateBearerToken(req, res, next) {
+  try {
+    // Get the token from the Authorization header
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const token = authHeader.split(" ")[1];
+
+    // Verify the token
+    const decoded = jwt.verify(token, "Hetan");
+    req.user = { userId: decoded.userId, username: decoded.username };
+    next();
+  } catch (error) {
+    console.error("Token validation error:", error);
+    return res.status(401).json({ error: "Unauthorized" });
   }
 }
 
@@ -222,4 +241,5 @@ module.exports = {
   verifyOTP,
   createResetSession,
   resetPassword,
+  validateBearerToken,
 };

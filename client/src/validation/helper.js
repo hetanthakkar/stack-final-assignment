@@ -137,3 +137,156 @@ export async function resetPassword({ username, password }) {
     return Promise.reject({ error });
   }
 }
+/**
+ * Upvote a question
+ * @param {string} qid - Question ID
+ * @returns {Promise<AxiosResponse>}
+ */
+export async function upvoteQuestion(qid) {
+  try {
+    const response = await axios.put(`/api/questions/${qid}/upvote`);
+    return response;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+/**
+ * Downvote a question
+ * @param {string} qid - Question ID
+ * @returns {Promise<AxiosResponse>}
+ */
+export async function downvoteQuestion(qid) {
+  try {
+    const response = await axios.put(`/api/questions/${qid}/downvote`);
+    return response;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+/**
+ * Upvote an answer
+ * @param {string} aid - Answer ID
+ * @returns {Promise<AxiosResponse>}
+ */
+export async function upvoteAnswer(aid) {
+  try {
+    const response = await axios.put(`/api/answers/${aid}/upvote`);
+    return response;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+/**
+ * Downvote an answer
+ * @param {string} aid - Answer ID
+ * @returns {Promise<AxiosResponse>}
+ */
+export async function downvoteAnswer(aid) {
+  try {
+    const response = await axios.put(`/api/answers/${aid}/downvote`);
+    return response;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+/**
+ * Upvote a comment
+ * @param {string} cid - Comment ID
+ * @returns {Promise<AxiosResponse>}
+ */
+export async function upvoteComment(cid) {
+  try {
+    const response = await axios.put(`/api/comments/${cid}/upvote`);
+    return response;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+/**
+ * Downvote a comment
+ * @param {string} cid - Comment ID
+ * @returns {Promise<AxiosResponse>}
+ */
+export async function downvoteComment(cid) {
+  try {
+    const response = await axios.put(`/api/comments/${cid}/downvote`);
+    return response;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+/**
+ * Add a comment to an answer
+ * @param {string} aid - Answer ID
+ * @param {string} text - Comment text
+ * @param {string} posted_by - Posted by
+ * @returns {Promise<AxiosResponse>}
+ */
+export async function addCommentToAnswer(aid, text, posted_by) {
+  try {
+    const response = await axios.post(`/api/answers/${aid}/comments`, {
+      text,
+      posted_by,
+    });
+    return response;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+/**
+ * Delete a comment from an answer
+ * @param {string} aid - Answer ID
+ * @param {string} cid - Comment ID
+ * @returns {Promise<AxiosResponse>}
+ */
+export async function deleteCommentFromAnswer(aid, cid) {
+  try {
+    const response = await axios.delete(`/api/answers/${aid}/comments/${cid}`);
+    return response;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+/**
+ * Add a comment to a question
+ * @param {string} qid - Question ID
+ * @param {string} text - Comment text
+ * @param {string} posted_by - Posted by
+ * @returns {Promise<AxiosResponse>}
+ */
+export async function addCommentToQuestion(qid, text, posted_by) {
+  try {
+    const response = await axios.post(`/api/questions/${qid}/comments`, {
+      text,
+      posted_by,
+    });
+    return response;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+/**
+ * Delete a comment from a question
+ * @param {string} qid - Question ID
+ * @param {string} cid - Comment ID
+ * @returns {Promise<AxiosResponse>}
+ */
+export async function deleteCommentFromQuestion(qid, cid) {
+  try {
+    const response = await axios.delete(
+      `/api/questions/${qid}/comments/${cid}`
+    );
+    return response;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}

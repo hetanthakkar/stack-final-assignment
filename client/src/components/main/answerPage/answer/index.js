@@ -1,10 +1,21 @@
 import { handleHyperlink } from "../../../../tool";
 import "./index.css";
+const Answer = ({ text, ansBy, meta, onDelete, onSelect, isSelected }) => {
+  const handleCheckboxChange = () => {
+    onSelect();
+  };
 
-// Component for the Answer Page
-const Answer = ({ text, ansBy, meta }) => {
+  const handleDelete = () => {
+    onDelete();
+  };
+
   return (
     <div className="answer-container">
+      <input
+        type="checkbox"
+        checked={isSelected}
+        onChange={handleCheckboxChange}
+      />
       <div className="answer-content">
         <div id="answerText" className="answer-text">
           {handleHyperlink(text)}
@@ -14,8 +25,8 @@ const Answer = ({ text, ansBy, meta }) => {
           <div className="answer-meta">{meta}</div>
         </div>
       </div>
+      <button onClick={handleDelete}>Delete</button>
     </div>
   );
 };
-
 export default Answer;

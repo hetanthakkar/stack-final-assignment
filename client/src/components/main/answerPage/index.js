@@ -4,13 +4,25 @@ import Answer from "./answer";
 import AnswerHeader from "./header";
 import "./index.css";
 import QuestionBody from "./questionBody";
-import { getQuestionById } from "../../../services/questionService";
+import {
+  getQuestionById,
+  upvoteQuestion,
+  downvoteQuestion,
+  addCommentToQuestion,
+  deleteCommentFromQuestion,
+  upvoteAnswer,
+  downvoteAnswer,
+  addCommentToAnswer,
+  deleteCommentFromAnswer,
+} from "../../../services/questionService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbsDown, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 
 const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
   const [question, setQuestion] = useState({});
+  const [selectedAnswers, setSelectedAnswers] = useState([]);
+  const [selectedComments, setSelectedComments] = useState([]);
   const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
   const [isAnswerDialogOpen, setIsAnswerDialogOpen] = useState(false);
   const [questionComment, setQuestionComment] = useState("");
@@ -21,6 +33,21 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
 
   const openQuestionDialog = () => {
     setIsQuestionDialogOpen(true);
+  };
+  const handleSelectAnswer = (index) => {
+    if (selectedAnswers.includes(index)) {
+      setSelectedAnswers(selectedAnswers.filter((i) => i !== index));
+    } else {
+      setSelectedAnswers([...selectedAnswers, index]);
+    }
+  };
+
+  const handleDeleteSelectedAnswers = () => {
+    const updatedAnswers = question.answers.filter(
+      (_, idx) => !selectedAnswers.includes(idx)
+    );
+    setQuestion({ ...question, answers: updatedAnswers });
+    setSelectedAnswers([]);
   };
 
   const closeQuestionDialog = () => {
@@ -86,19 +113,112 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
   useEffect(() => {
     const fetchData = async () => {
       let res = await getQuestionById(qid);
+      if (res.answers) {
+        res.answers.forEach((answer) => {
+          if (!answer.comments) {
+            answer.comments = [];
+          }
+        });
+      }
       setQuestion(res || {});
     };
     fetchData().catch((e) => console.log(e));
   }, [qid]);
 
   const handleUpvote = (type, id) => {
-    // Implement upvoting logic here
-    console.log(`Upvoted ${type} with id ${id}`);
+    // console.log("cid", cid);
+    // Find the question, answer, or comment based on the type and id
+    if (type === "question") {
+      let t = {
+        ...question,
+        upvotes: question.upvotes + 1,
+      };
+      console.log(t, "ladiknfoin");
+      setQuestion(t);
+    } else if (type === "answer") {
+      const updatedAnswers = [...question.answers];
+      updatedAnswers[id] = {
+        ...updatedAnswers[id],
+        upvotes: updatedAnswers[id].upvotes + 1,
+      };
+      console.log(updatedAnswers);
+      setQuestion({ ...question, answers: updatedAnswers });
+    } else if (type === "comment") {
+      // debugger;
+      const updatedAnswers = [...question.answers];
+      const answerComments = updatedAnswers[id].comments.map((comment) =>
+        comment.id === id
+          ? { ...comment, upvotes: comment.upvotes + 1 }
+          : comment
+      );
+      updatedAnswers[id].comments = answerComments;
+      setQuestion({ ...question, answers: updatedAnswers });
+    }
   };
 
   const handleDownvote = (type, id) => {
-    // Implement downvoting logic here
-    console.log(`Downvoted ${type} with id ${id}`);
+    // Find the question, answer, or comment based on the type and id
+    if (type === "question") {
+      setQuestion({
+        ...question,
+        downvotes: question.downvotes + 1,
+      });
+    } else if (type === "answer") {
+      const updatedAnswers = [...question.answers];
+      updatedAnswers[id] = {
+        ...updatedAnswers[id],
+        downvotes: updatedAnswers[id].downvotes + 1,
+      };
+      console.log("osidm", id, updatedAnswers);
+
+      setQuestion({ ...question, answers: updatedAnswers });
+    } else if (type === "comment") {
+      const updatedAnswers = [...question.answers];
+      const answerComments = updatedAnswers[id].comments.map((comment) =>
+        comment.id === id
+          ? { ...comment, downvotes: comment.downvotes + 1 }
+          : comment
+      );
+      updatedAnswers[id].comments = answerComments;
+      setQuestion({ ...question, answers: updatedAnswers });
+    }
+  };
+  // const handleDeleteAnswer = (index) => {
+  //   const updatedAnswers = question.answers.filter((_, idx) => idx !== index);
+  //   setQuestion({ ...question, answers: updatedAnswers });
+  // };
+  const handleDeleteAnswer = (answerIndex) => {
+    const updatedAnswers = question.answers.filter(
+      (_, idx) => idx !== answerIndex
+    );
+    setQuestion({ ...question, answers: updatedAnswers });
+    setSelectedAnswers([]);
+  };
+  const handleDeleteComment = (answerIndex, commentId) => {
+    const updatedAnswers = [...question.answers];
+    const answerComments = updatedAnswers[answerIndex].comments;
+    updatedAnswers[answerIndex].comments = answerComments.filter(
+      (c) => c.id !== commentId
+    );
+    setQuestion({ ...question, answers: updatedAnswers });
+    setSelectedComments(selectedComments.filter((id) => id !== commentId));
+  };
+
+  const handleSelectComment = (commentId) => {
+    if (selectedComments.includes(commentId)) {
+      setSelectedComments(selectedComments.filter((id) => id !== commentId));
+    } else {
+      setSelectedComments([...selectedComments, commentId]);
+    }
+  };
+
+  const handleDeleteSelectedComments = () => {
+    const updatedAnswers = question.answers.map((ans) => ({
+      ...ans,
+      comments: ans.comments.filter((c) => !selectedComments.includes(c.id)),
+    }));
+    setQuestion({ ...question, answers: updatedAnswers });
+    setSelectedComments([]);
   };
 
   return (
@@ -113,8 +233,15 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
           views={question && question.views}
           text={question && question.text}
           askby={question && question.asked_by}
+          handleUpvote={handleUpvote}
+          handleDownvote={handleDownvote}
           meta={question && getMetaData(new Date(question.ask_date_time))}
         />
+        {selectedAnswers.length > 0 && (
+          <button onClick={handleDeleteSelectedAnswers}>
+            Delete Selected Answers
+          </button>
+        )}
         <div>
           <div className="CommentForQuestion" onClick={openQuestionDialog}>
             Add Comment to Question
@@ -122,17 +249,17 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
           {questionComments.length > 0 && (
             <div className="comments-section">
               <h3>Comments:</h3>
-              {questionComments.map((c) => (
+              {questionComments.map((c, id) => (
                 <div key={c.id} className="comment comment-indented">
                   <div className="comment-header">
                     <p className="comment-author">{c.author}</p>
                     <p className="comment-date">{c.date}</p>
                     <div className="comment-votes-1">
-                      <button onClick={() => handleUpvote("comment", c.id)}>
-                        <FontAwesomeIcon icon={faThumbsUp} />
+                      <button onClick={() => handleUpvote("comment", id, c)}>
+                        <FontAwesomeIcon icon={faThumbsUp} /> {c.upvotes}
                       </button>
                       <button onClick={() => handleDownvote("comment", c.id)}>
-                        <FontAwesomeIcon icon={faThumbsDown} />
+                        <FontAwesomeIcon icon={faThumbsDown} /> {c.downvotes}
                       </button>
                     </div>
                   </div>
@@ -174,10 +301,10 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
             <div key={idx} className="answer-container">
               <div className="answersForQuestion">
                 <div className="comment-votes-1">
-                  <button onClick={() => handleUpvote("comment", 10)}>
+                  <button onClick={() => handleUpvote("answer", idx)}>
                     <FontAwesomeIcon icon={faThumbsUp} />
                   </button>
-                  <button onClick={() => handleDownvote("comment", 10)}>
+                  <button onClick={() => handleDownvote("answer", idx)}>
                     <FontAwesomeIcon icon={faThumbsDown} />
                   </button>
                 </div>
@@ -186,6 +313,9 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
                   text={a.text}
                   ansBy={a.ans_by}
                   meta={getMetaData(new Date(a.ans_date_time))}
+                  onDelete={() => handleDeleteAnswer(idx)}
+                  onSelect={() => handleSelectAnswer(idx)}
+                  isSelected={selectedAnswers.includes(idx)}
                 />
               </div>
 
@@ -217,6 +347,9 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
                           </div>
                           <p className="comment-text">{c.text}</p>
                         </div>
+                        <button onClick={() => handleDeleteComment(idx, c.id)}>
+                          Delete
+                        </button>
                       </div>
                     ))}
                   </>

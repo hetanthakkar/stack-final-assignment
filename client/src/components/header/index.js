@@ -1,8 +1,20 @@
+import { useNavigate } from "react-router-dom";
 import "./index.css";
 import { useState } from "react";
 
-const Header = ({ search, setQuesitonPage }) => {
+const Header = ({ search, setQuesitonPage, setProfile }) => {
   const [val, setVal] = useState(search);
+  const navigate = useNavigate();
+  const handleSignout = () => {
+    if (window.confirm("Are you sure you want to sign out?")) {
+      navigate("/");
+    }
+  };
+  const handleShowProfile = () => {
+    console.log("adikps");
+    setProfile(true);
+    // navigate("/show-user");
+  };
   return (
     <div id="header" className="header">
       <div className="title">Fake Stack Overflow</div>
@@ -23,8 +35,8 @@ const Header = ({ search, setQuesitonPage }) => {
         }}
       />
       <div className="Profile_signout">
-        <button>Profile</button>
-        <button>Sign Out</button>
+        <button onClick={handleShowProfile}>Profile</button>
+        <button onClick={handleSignout}>Sign Out</button>
       </div>
     </div>
   );

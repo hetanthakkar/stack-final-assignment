@@ -11,6 +11,7 @@ import PageNotFound from "../components/LoginComponents/PageNotFound";
 import LoginPage from "../components/main/loginPage";
 import FakeStackOverflow from "../components/fakestackoverflow";
 import "../index.css";
+import UserProfile from "../components/main/profilePage";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
         <Route exact path="/password" element={<Password />} />
         <Route exact path="/profile" element={<Profile />} />
         <Route exact path="/recovery" element={<Recovery />} />
+        <Route exact path="/show-user" element={<UserProfile />} />
         <Route exact path="/reset" element={<Reset />} />
         <Route exact path="/*" element={<PageNotFound />} />
       </Routes>
