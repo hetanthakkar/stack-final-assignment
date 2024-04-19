@@ -1,6 +1,8 @@
 const express = require("express");
 const Answer = require("../models/answers");
 const Question = require("../models/questions");
+const comments = require("../models/comments");
+const Comment = require("../models/comments");
 
 const router = express.Router();
 
@@ -21,84 +23,63 @@ router.post("/addAnswer", async (req, res) => {
 });
 
 // Upvote an answer
-router.put("/answers/:id/upvote", async (req, res) => {
+// Vote (upvote/downvote) an answer
+router.put("/:id/vote", async (req, res) => {
   try {
     const answer = await Answer.findById(req.params.id);
     if (!answer) return res.status(404).json({ msg: "Answer not found" });
 
-    const userId = req.user._id; // Assuming you have middleware to get the current user
+    const userId = req.body.userId; // Assuming you have middleware to get the current user
 
     // Check if the user has already upvoted
     if (answer.upvotes.includes(userId)) {
-      return res
-        .status(400)
-        .json({ msg: "You have already upvoted this answer" });
-    }
-
-    // Check if the user has downvoted and remove the downvote
-    if (answer.downvotes.includes(userId)) {
-      answer.downvotes = answer.downvotes.filter(
-        (id) => id.toString() !== userId.toString()
-      );
-    }
-
-    answer.upvotes.push(userId);
-    await answer.save();
-
-    res.json({ msg: "Answer upvoted successfully" });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
-  }
-});
-
-// Downvote an answer
-router.put("/answers/:id/downvote", async (req, res) => {
-  try {
-    const answer = await Answer.findById(req.params.id);
-    if (!answer) return res.status(404).json({ msg: "Answer not found" });
-
-    const userId = req.user._id; // Assuming you have middleware to get the current user
-
-    // Check if the user has already downvoted
-    if (answer.downvotes.includes(userId)) {
-      return res
-        .status(400)
-        .json({ msg: "You have already downvoted this answer" });
-    }
-
-    // Check if the user has upvoted and remove the upvote
-    if (answer.upvotes.includes(userId)) {
+      // Remove the upvote
       answer.upvotes = answer.upvotes.filter(
         (id) => id.toString() !== userId.toString()
       );
     }
 
-    answer.downvotes.push(userId);
+    // Check if the user has already downvoted
+    if (answer.downvotes.includes(userId)) {
+      // Remove the downvote
+      answer.downvotes = answer.downvotes.filter(
+        (id) => id.toString() !== userId.toString()
+      );
+    }
+
+    const voteType = req.body.voteType; // 'upvote' or 'downvote'
+    if (voteType === "upvote") {
+      answer.upvotes.push(userId);
+    } else if (voteType === "downvote") {
+      answer.downvotes.push(userId);
+    } else {
+      return res.status(400).json({ msg: "Invalid vote type" });
+    }
+
     await answer.save();
 
-    res.json({ msg: "Answer downvoted successfully" });
+    res.json({ msg: `Answer ${voteType}d successfully` });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
   }
 });
 
-outer.post("/answers/:id/comments", async (req, res) => {
+router.post("/:id/comments", async (req, res) => {
   try {
     const answer = await Answer.findById(req.params.id);
     if (!answer) return res.status(404).json({ msg: "Answer not found" });
 
     const { text, posted_by } = req.body;
 
-    const newComment = new Comment({
+    const newComment = new comments({
       text,
       posted_by,
       posted_date_time: Date.now(),
     });
 
     const comment = await newComment.save();
-
+    console.log("answers", answer);
     answer.comments.push(comment._id);
     await answer.save();
 
@@ -109,12 +90,13 @@ outer.post("/answers/:id/comments", async (req, res) => {
   }
 });
 
-router.delete("/answers/:answerId/comments/:commentId", async (req, res) => {
+router.delete("/:answerId/comments/:commentId", async (req, res) => {
   try {
     const answer = await Answer.findById(req.params.answerId);
     if (!answer) return res.status(404).json({ msg: "Answer not found" });
 
     const comment = await Comment.findById(req.params.commentId);
+    console.log("comment", comment);
     if (!comment) return res.status(404).json({ msg: "Comment not found" });
 
     // Check if the comment belongs to the answer
@@ -131,7 +113,7 @@ router.delete("/answers/:answerId/comments/:commentId", async (req, res) => {
     await answer.save();
 
     // Remove the comment from the database
-    await Comment.findByIdAndRemove(req.params.commentId);
+    await Comment.findOneAndDelete({ _id: req.params.commentId });
 
     res.json({ msg: "Comment removed successfully" });
   } catch (err) {

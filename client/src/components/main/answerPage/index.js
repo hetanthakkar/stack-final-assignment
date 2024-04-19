@@ -6,18 +6,20 @@ import "./index.css";
 import QuestionBody from "./questionBody";
 import {
   getQuestionById,
-  upvoteQuestion,
-  downvoteQuestion,
-  addCommentToQuestion,
   deleteCommentFromQuestion,
-  upvoteAnswer,
-  downvoteAnswer,
-  addCommentToAnswer,
-  deleteCommentFromAnswer,
 } from "../../../services/questionService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbsDown, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import {
+  addCommentToAnswer,
+  addCommentToQuestion,
+  deleteCommentFromAnswer,
+  downvoteAnswer,
+  downvoteQuestion,
+  upvoteAnswer,
+  upvoteQuestion,
+} from "../../../validation/helper";
 
 const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
   const [question, setQuestion] = useState({});
@@ -73,37 +75,47 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
     setAnswerComment(event.target.value);
   };
 
-  const submitQuestionComment = () => {
+  const submitQuestionComment = async () => {
     if (questionComment.trim() !== "") {
-      const newComment = {
-        id: Date.now(),
-        text: questionComment,
-        author: "You", // You can change this to the actual author
-        date: new Date().toLocaleString(), // Current date and time
-        upvotes: 0,
-        downvotes: 0,
-      };
-      setQuestionComments([...questionComments, newComment]);
+      await addCommentToQuestion(qid, questionComment, "You");
+      setQuestionComments([
+        ...questionComments,
+        {
+          id: Date.now(),
+          text: questionComment,
+          author: "You",
+          date: new Date().toLocaleString(),
+          upvotes: 0,
+          downvotes: 0,
+        },
+      ]);
       setQuestionComment("");
       closeQuestionDialog();
     }
   };
 
-  const submitAnswerComment = () => {
+  const submitAnswerComment = async () => {
     if (answerComment.trim() !== "") {
-      const newComment = {
-        id: Date.now(),
-        text: answerComment,
-        author: "You", // You can change this to the actual author
-        date: new Date().toLocaleString(), // Current date and time
-        upvotes: 0,
-        downvotes: 0,
-      };
+      await addCommentToAnswer(
+        question.answers[currentAnswerIndex].id,
+        answerComment,
+        "You"
+      );
       const updatedAnswers = [...question.answers];
-      updatedAnswers[currentAnswerIndex].comments = [
-        ...(updatedAnswers[currentAnswerIndex].comments || []),
-        newComment,
-      ];
+      updatedAnswers[currentAnswerIndex] = {
+        ...updatedAnswers[currentAnswerIndex],
+        comments: [
+          ...(updatedAnswers[currentAnswerIndex].comments || []),
+          {
+            id: Date.now(),
+            text: answerComment,
+            author: "You",
+            date: new Date().toLocaleString(),
+            upvotes: 0,
+            downvotes: 0,
+          },
+        ],
+      };
       setQuestion({ ...question, answers: updatedAnswers });
       setAnswerComment("");
       closeAnswerDialog();
@@ -125,26 +137,20 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
     fetchData().catch((e) => console.log(e));
   }, [qid]);
 
-  const handleUpvote = (type, id) => {
-    // console.log("cid", cid);
-    // Find the question, answer, or comment based on the type and id
+  const handleUpvote = async (type, id) => {
     if (type === "question") {
-      let t = {
-        ...question,
-        upvotes: question.upvotes + 1,
-      };
-      console.log(t, "ladiknfoin");
-      setQuestion(t);
+      await upvoteQuestion(qid);
+      setQuestion({ ...question, upvotes: question.upvotes + 1 });
     } else if (type === "answer") {
+      console.log(question.answers[id]._id);
+      await upvoteAnswer(question.answers[id]._id);
       const updatedAnswers = [...question.answers];
       updatedAnswers[id] = {
         ...updatedAnswers[id],
         upvotes: updatedAnswers[id].upvotes + 1,
       };
-      console.log(updatedAnswers);
       setQuestion({ ...question, answers: updatedAnswers });
     } else if (type === "comment") {
-      // debugger;
       const updatedAnswers = [...question.answers];
       const answerComments = updatedAnswers[id].comments.map((comment) =>
         comment.id === id
@@ -156,21 +162,20 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
     }
   };
 
-  const handleDownvote = (type, id) => {
-    // Find the question, answer, or comment based on the type and id
+  const handleDownvote = async (type, id) => {
     if (type === "question") {
+      await downvoteQuestion(qid);
       setQuestion({
         ...question,
         downvotes: question.downvotes + 1,
       });
     } else if (type === "answer") {
+      await downvoteAnswer(question.answers[id].id);
       const updatedAnswers = [...question.answers];
       updatedAnswers[id] = {
         ...updatedAnswers[id],
         downvotes: updatedAnswers[id].downvotes + 1,
       };
-      console.log("osidm", id, updatedAnswers);
-
       setQuestion({ ...question, answers: updatedAnswers });
     } else if (type === "comment") {
       const updatedAnswers = [...question.answers];
@@ -194,16 +199,15 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
     setQuestion({ ...question, answers: updatedAnswers });
     setSelectedAnswers([]);
   };
-  const handleDeleteComment = (answerIndex, commentId) => {
+  const handleDeleteComment = async (answerIndex, commentId) => {
+    await deleteCommentFromAnswer(question.answers[answerIndex].id, commentId);
     const updatedAnswers = [...question.answers];
-    const answerComments = updatedAnswers[answerIndex].comments;
-    updatedAnswers[answerIndex].comments = answerComments.filter(
-      (c) => c.id !== commentId
-    );
+    updatedAnswers[answerIndex].comments = updatedAnswers[
+      answerIndex
+    ].comments.filter((c) => c.id !== commentId);
     setQuestion({ ...question, answers: updatedAnswers });
     setSelectedComments(selectedComments.filter((id) => id !== commentId));
   };
-
   const handleSelectComment = (commentId) => {
     if (selectedComments.includes(commentId)) {
       setSelectedComments(selectedComments.filter((id) => id !== commentId));

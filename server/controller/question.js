@@ -6,6 +6,7 @@ const {
   getQuestionsByOrder,
   filterQuestionsBySearch,
 } = require("../utils/question");
+const comments = require("../models/comments");
 
 const router = express.Router();
 
@@ -26,11 +27,25 @@ const getQuestionsByFilter = async (req, res) => {
 const getQuestionById = async (req, res) => {
   try {
     const questionId = req.params.id;
+    const userId = req.body.userId; // Assuming you have middleware to get the current user ID
+
     let question = await Question.findOneAndUpdate(
-      { _id: questionId },
-      { $inc: { views: 1 } },
+      {
+        _id: questionId,
+        views: { $ne: userId }, // Check if the user ID is not already present in the views array
+      },
+      {
+        $push: { views: userId }, // Add the user ID to the views array
+        $inc: { viewCount: 1 }, // Increment the viewCount field
+      },
       { new: true }
     );
+
+    if (!question) {
+      // If the user ID is already present in the views array, fetch the question without updating
+      question = await Question.findById(questionId);
+    }
+
     question = await question.populate("answers");
     res.status(200);
     res.json(question);
@@ -74,85 +89,61 @@ router.post("/addQuestion", (req, res) =>
   })
 );
 
-// Upvote a question
-router.put("/questions/:id/upvote", async (req, res) => {
+router.put("/:id/vote", async (req, res) => {
   try {
     const question = await Question.findById(req.params.id);
     if (!question) return res.status(404).json({ msg: "Question not found" });
 
-    const userId = req.user._id; // Assuming you have middleware to get the current user
+    const userId = req.body.userId; // Assuming you have middleware to get the current user
 
     // Check if the user has already upvoted
     if (question.upvotes.includes(userId)) {
-      return res
-        .status(400)
-        .json({ msg: "You have already upvoted this question" });
-    }
-
-    // Check if the user has downvoted and remove the downvote
-    if (question.downvotes.includes(userId)) {
-      question.downvotes = question.downvotes.filter(
-        (id) => id.toString() !== userId.toString()
-      );
-    }
-
-    question.upvotes.push(userId);
-    await question.save();
-
-    res.json({ msg: "Question upvoted successfully" });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
-  }
-});
-
-// Downvote a question
-router.put("/questions/:id/downvote", async (req, res) => {
-  try {
-    const question = await Question.findById(req.params.id);
-    if (!question) return res.status(404).json({ msg: "Question not found" });
-
-    const userId = req.user._id; // Assuming you have middleware to get the current user
-
-    // Check if the user has already downvoted
-    if (question.downvotes.includes(userId)) {
-      return res
-        .status(400)
-        .json({ msg: "You have already downvoted this question" });
-    }
-
-    // Check if the user has upvoted and remove the upvote
-    if (question.upvotes.includes(userId)) {
+      // Remove the upvote
       question.upvotes = question.upvotes.filter(
         (id) => id.toString() !== userId.toString()
       );
     }
 
-    question.downvotes.push(userId);
+    // Check if the user has already downvoted
+    if (question.downvotes.includes(userId)) {
+      // Remove the downvote
+      question.downvotes = question.downvotes.filter(
+        (id) => id.toString() !== userId.toString()
+      );
+    }
+
+    const voteType = req.body.voteType; // 'upvote' or 'downvote'
+    if (voteType === "upvote") {
+      question.upvotes.push(userId);
+    } else if (voteType === "downvote") {
+      question.downvotes.push(userId);
+    } else {
+      return res.status(400).json({ msg: "Invalid vote type" });
+    }
+
     await question.save();
 
-    res.json({ msg: "Question downvoted successfully" });
+    res.json({ msg: `Question ${voteType}d successfully` });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
   }
 });
 
-router.post("/questions/:id/comments", async (req, res) => {
+router.post("/:id/comments", async (req, res) => {
   try {
     const question = await Question.findById(req.params.id);
     if (!question) return res.status(404).json({ msg: "Question not found" });
 
     const { text, posted_by } = req.body;
 
-    const newComment = new Comment({
+    const newComment = new comments({
       text,
       posted_by,
       posted_date_time: Date.now(),
     });
 
     const comment = await newComment.save();
-
     question.comments.push(comment._id);
     await question.save();
 
@@ -162,39 +153,35 @@ router.post("/questions/:id/comments", async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+router.delete("/:questionId/comments/:commentId", async (req, res) => {
+  try {
+    const question = await Question.findById(req.params.questionId);
+    if (!question) return res.status(404).json({ msg: "question not found" });
 
-router.delete(
-  "/questions/:questionId/comments/:commentId",
-  async (req, res) => {
-    try {
-      const question = await Question.findById(req.params.questionId);
-      if (!question) return res.status(404).json({ msg: "Question not found" });
+    const comment = await comments.findById(req.params.commentId);
+    if (!comment) return res.status(404).json({ msg: "Comment not found" });
 
-      const comment = await Comment.findById(req.params.commentId);
-      if (!comment) return res.status(404).json({ msg: "Comment not found" });
-
-      // Check if the comment belongs to the question
-      if (!question.comments.includes(comment._id)) {
-        return res
-          .status(400)
-          .json({ msg: "Comment does not belong to this question" });
-      }
-
-      // Remove the comment from the question
-      question.comments = question.comments.filter(
-        (id) => id.toString() !== comment._id.toString()
-      );
-      await question.save();
-
-      // Remove the comment from the database
-      await Comment.findByIdAndRemove(req.params.commentId);
-
-      res.json({ msg: "Comment removed successfully" });
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Server Error");
+    // Check if the comment belongs to the answer
+    if (!question.comments.includes(comment._id)) {
+      return res
+        .status(400)
+        .json({ msg: "Comment does not belong to this answer" });
     }
+
+    // Remove the comment from the answer
+    question.comments = question.comments.filter(
+      (id) => id.toString() !== comment._id.toString()
+    );
+    await question.save();
+
+    // Remove the comment from the database
+    await comments.findOneAndDelete({ _id: req.params.commentId });
+
+    res.json({ msg: "Comment removed successfully" });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
   }
-);
+});
 
 module.exports = router;

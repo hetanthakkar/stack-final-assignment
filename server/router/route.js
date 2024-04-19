@@ -20,7 +20,8 @@ router
   .route("/authenticate")
   .post(controller.verifyUser, (req, res) => res.end()); //authenticate the user
 router.route("/login").post(controller.verifyUser, controller.login); //login into the app
-router.route("/login").post(controller.verifyUser, controller.login); //login into the app
+// router.route("/answers").put(controller); //login into the app
+
 /**
  * GET
  */
