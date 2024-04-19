@@ -1,6 +1,14 @@
 import { handleHyperlink } from "../../../../tool";
 import "./index.css";
-const Answer = ({ text, ansBy, meta, onDelete, onSelect, isSelected }) => {
+const Answer = ({
+  text,
+  ansBy,
+  meta,
+  onDelete,
+  onSelect,
+  isSelected,
+  isModerator,
+}) => {
   const handleCheckboxChange = () => {
     onSelect();
   };
@@ -11,11 +19,6 @@ const Answer = ({ text, ansBy, meta, onDelete, onSelect, isSelected }) => {
 
   return (
     <div className="answer-container">
-      <input
-        type="checkbox"
-        checked={isSelected}
-        onChange={handleCheckboxChange}
-      />
       <div className="answer-content">
         <div id="answerText" className="answer-text">
           {handleHyperlink(text)}
@@ -25,7 +28,7 @@ const Answer = ({ text, ansBy, meta, onDelete, onSelect, isSelected }) => {
           <div className="answer-meta">{meta}</div>
         </div>
       </div>
-      <button onClick={handleDelete}>Delete</button>
+      {isModerator && <button onClick={handleDelete}>Delete</button>}
     </div>
   );
 };

@@ -6,8 +6,17 @@ import { Toaster, toast } from "react-hot-toast";
 import { useFormik } from "formik";
 import { usernameValidate, passwordValidate } from "../../validation/validate";
 import { useAuthStore } from "../../store/store";
-
+import { login } from "../../validation/helper";
 export default function Username() {
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      // User is present in localStorage, so redirect to /home
+      navigate("/");
+    }
+  });
+
   const setUsername = useAuthStore((state) => state.setUsername);
   // const username = useAuthStore(state => state.auth.uetUsername);
   const navigate = useNavigate();
@@ -28,9 +37,13 @@ export default function Username() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      // console.log(values);
+      console.log(values);
       setUsername(values.username);
-      navigate("/home");
+      const response = await login(values.username, values.password);
+      console.log("Response", response);
+      if (response.token) {
+        navigate("/");
+      }
     },
   });
 

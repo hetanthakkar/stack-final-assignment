@@ -25,10 +25,11 @@ const getQuestionsByFilter = async (req, res) => {
 };
 
 const getQuestionById = async (req, res) => {
+  console.log(req.params);
   try {
     const questionId = req.params.id;
-    const userId = req.body.userId; // Assuming you have middleware to get the current user ID
-
+    const userId = req.params.userId; // Assuming you have middleware to get the current user ID
+    console.log("user id", questionId, userId);
     let question = await Question.findOneAndUpdate(
       {
         _id: questionId,
@@ -40,6 +41,7 @@ const getQuestionById = async (req, res) => {
       },
       { new: true }
     );
+    console.log("Came here", question);
 
     if (!question) {
       // If the user ID is already present in the views array, fetch the question without updating
@@ -77,7 +79,7 @@ router.get("/getQuestion", (req, res) => {
   });
 });
 
-router.get("/getQuestionById/:id", (req, res) =>
+router.get("/getQuestionById/:id/:userId", (req, res) =>
   getQuestionById(req, res).then((data) => {
     return data;
   })
@@ -132,6 +134,7 @@ router.put("/:id/vote", async (req, res) => {
 
 router.post("/:id/comments", async (req, res) => {
   try {
+    console.log("it came here");
     const question = await Question.findById(req.params.id);
     if (!question) return res.status(404).json({ msg: "Question not found" });
 
@@ -142,7 +145,6 @@ router.post("/:id/comments", async (req, res) => {
       posted_by,
       posted_date_time: Date.now(),
     });
-
     const comment = await newComment.save();
     question.comments.push(comment._id);
     await question.save();
@@ -155,6 +157,7 @@ router.post("/:id/comments", async (req, res) => {
 });
 router.delete("/:questionId/comments/:commentId", async (req, res) => {
   try {
+    console.log("id is", req.params.questionId, req.params.commentId);
     const question = await Question.findById(req.params.questionId);
     if (!question) return res.status(404).json({ msg: "question not found" });
 
@@ -181,6 +184,26 @@ router.delete("/:questionId/comments/:commentId", async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const questionId = req.params.id;
+    const question = await Question.findById(questionId);
+    console.log("Question id is", questionId);
+    if (!question) {
+      return res.status(404).json({ msg: "Question not found" });
+    }
+    const deletedQuestion = await Question.deleteOne({ _id: questionId });
+
+    // Delete the question
+    // await question.remove();
+
+    res.json({ msg: "Question deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Internal server error" });
   }
 });
 

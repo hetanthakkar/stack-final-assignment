@@ -15,8 +15,6 @@ mongoose.connect(MONGO_URL);
 
 const app = express();
 
-app.use(express.json()); // This line was incorrect, should be express.json() instead of express()
-app.use(cors());
 app.use(morgan("tiny"));
 app.disable("x-powered-by");
 
@@ -26,6 +24,14 @@ app.use(
     origin: [CLIENT_URL],
   })
 );
+
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
@@ -38,10 +44,12 @@ app.use("/api", router);
 const questionController = require("./controller/question");
 const tagController = require("./controller/tag");
 const answerController = require("./controller/answer");
+const commentController = require("./controller/comment");
 
 app.use("/question", questionController);
 app.use("/tag", tagController);
 app.use("/answer", answerController);
+app.use("/comment", commentController);
 
 let server = app.listen(port, () => {
   console.log(`Server starts at http://localhost:${port}`);

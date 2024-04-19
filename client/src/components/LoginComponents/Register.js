@@ -6,6 +6,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { useFormik } from "formik";
 import { registerValidate } from "../../validation/validate";
 import saveFile from "../../validation/imageSave";
+import { registerUser } from "../../validation/helper";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function Register() {
     onSubmit: async (values) => {
       values = await Object.assign(values, { profile: file || " " });
       console.log(values);
-      navigate("/home");
+      navigate("/");
     },
   });
 
@@ -60,28 +61,21 @@ export default function Register() {
     if (!formik.values.password) {
       return toast.error("Please entejr password.");
     }
-    try {
-      const response = await fetch("http://localhost:8000/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: formik.values.username,
-          password: formik.values.password,
-          email: formik.values.email,
-        }),
-      });
 
-      if (!response.ok) {
-        throw new Error("Failed to register user");
-      }
-      toast.success("User registered successfully");
+    try {
+      const credentials = {
+        username: formik.values.username,
+        password: formik.values.password,
+        email: formik.values.email,
+        profile: file || "", // Include the profile image if available
+      };
+
+      const msg = await registerUser(credentials);
+      toast.success(msg);
 
       setTimeout(() => {
         formik.handleSubmit();
-      }, 500); // 500 milliseconds delay
-      // formik.handleSubmit();
+      }, 500);
     } catch (error) {
       console.error("Error registering user:", error);
       toast.error("Failed to register user. Please try again.");

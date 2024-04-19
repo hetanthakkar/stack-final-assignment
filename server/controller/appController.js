@@ -25,6 +25,7 @@ async function verifyUser(req, res, next) {
     }
     next();
   } catch (error) {
+    console.log("Eerrr");
     return res.status(404).send({ error: "Authentication Error...!" });
   }
 }
@@ -51,6 +52,7 @@ async function register(req, res) {
       password: hashedPassword,
       profile: profile || "",
       email,
+      isModerator: username == "moderator" && password == "moderator@123123",
     });
 
     // Save user to the database
@@ -93,6 +95,8 @@ async function login(req, res) {
       msg: "Login successful",
       username: user.username,
       token: token,
+      userId: user._id,
+      isModerator: user?.isModerator,
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -113,6 +117,8 @@ async function getUser(req, res) {
     if (!user) {
       return res.status(501).send({ error: "Cannot find the User!" });
     }
+
+    console.log("ujer is", user);
 
     // BY THIS CHANGE, I HAVE REMOVED THE PASSWORD FIELD WHEN WE TRY TO RETRIEVE THE DATA OF A USER USING GET.
     const { password, ...rest } = Object.assign({}, user.toJSON());

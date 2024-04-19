@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema({
   },
   email: {
     type: String,
+
     required: [true, "Please provide an email"],
     unique: true,
   },
@@ -20,6 +21,7 @@ const UserSchema = new mongoose.Schema({
   mobile: { type: Number },
   address: { type: String },
   profile: { type: String },
+  isModerator: { type: Boolean, default: false },
 });
 
 const User = mongoose.model.Users || mongoose.model("User", UserSchema);

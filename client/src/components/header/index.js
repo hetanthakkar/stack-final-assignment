@@ -1,12 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import "./index.css";
 import { useState } from "react";
+import { logout } from "../../validation/helper";
 
 const Header = ({ search, setQuesitonPage, setProfile }) => {
   const [val, setVal] = useState(search);
   const navigate = useNavigate();
-  const handleSignout = () => {
+  const handleSignout = async () => {
     if (window.confirm("Are you sure you want to sign out?")) {
+      await logout();
       navigate("/");
     }
   };

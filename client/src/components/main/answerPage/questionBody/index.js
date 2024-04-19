@@ -12,15 +12,17 @@ const QuestionBody = ({
   meta,
   handleUpvote,
   handleDownvote,
+  upvotes,
+  downvotes,
 }) => {
   return (
     <div className="question-body-container">
       <div className="comment-votes-1">
         <button className="upvote" onClick={() => handleUpvote("question")}>
-          <FontAwesomeIcon icon={faThumbsUp} />
+          {upvotes} <FontAwesomeIcon icon={faThumbsUp} />
         </button>
         <button className="downvote" onClick={() => handleDownvote("question")}>
-          <FontAwesomeIcon icon={faThumbsDown} />
+          {downvotes} <FontAwesomeIcon icon={faThumbsDown} />
         </button>
       </div>
       <div className="question-details">

@@ -121,4 +121,40 @@ router.delete("/:answerId/comments/:commentId", async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
+router.delete("/:qid/:id", async (req, res) => {
+  try {
+    // Find the answer by ID
+    const answer = await Answer.findById(req.params.id);
+
+    // If the answer doesn't exist, return a 404 error
+    if (!answer) {
+      return res.status(404).json({ msg: "Answer not found" });
+    }
+
+    // Find the question that the answer belongs to
+    const question = await Question.findOne({ _id: req.params.qid });
+
+    // If the question doesn't exist, return a 404 error
+    if (!question) {
+      return res.status(404).json({ msg: "Question not found" });
+    }
+
+    // Remove the answer from the question's answers array
+    question.answers = question.answers.filter(
+      (answerId) => answerId.toString() !== req.params.id
+    );
+
+    // Save the updated question
+    await question.save();
+
+    // Remove the answer from the database
+    await Answer.findOneAndDelete({ _id: req.params.id });
+
+    res.json({ msg: "Answer removed successfully" });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
 module.exports = router;

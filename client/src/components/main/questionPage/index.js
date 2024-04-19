@@ -4,6 +4,7 @@ import Question from "./question";
 
 import { getQuestionsByFilter } from "../../../services/questionService";
 import { useEffect, useState } from "react";
+import { getLocalUser } from "../../../validation/helper";
 // QuestionPage component
 const QuestionPage = ({
   title_text = "All Questions",
@@ -15,10 +16,13 @@ const QuestionPage = ({
   handleNewQuestion,
 }) => {
   const [qlist, setQlist] = useState([]);
+  const [user, setUser] = useState(null);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
+      let user = await getLocalUser();
+      setUser(user);
       let res = await getQuestionsByFilter(order, search);
       setQlist(res || []);
     };
@@ -37,10 +41,26 @@ const QuestionPage = ({
       setSelectedQuestions([...selectedQuestions, id]);
     }
   };
+  const handleDeleteSelected = async () => {
+    try {
+      // Delete each selected question from the server
+      const promises = selectedQuestions.map(async (qid) => {
+        console.log("id is", qid);
+        await fetch(`http://localhost:8000/question/${qid}`, {
+          method: "DELETE",
+        });
+      });
+      await Promise.all(promises);
 
-  const handleDeleteSelected = () => {
-    setQlist(qlist.filter((q) => !selectedQuestions.includes(q._id)));
-    setSelectedQuestions([]);
+      // Update the state by filtering out the deleted questions
+      const updatedQlist = qlist.filter(
+        (q) => !selectedQuestions.includes(q._id)
+      );
+      setQlist(updatedQlist);
+      setSelectedQuestions([]);
+    } catch (error) {
+      console.error("Error deleting selected questions:", error);
+    }
   };
 
   return (
@@ -52,9 +72,9 @@ const QuestionPage = ({
         handleNewQuestion={handleNewQuestion}
       />
       <div id="question_list" className="question_list">
-        <button onClick={handleDeleteSelected}>
-          Delete Selected{JSON.stringify(selectedQuestions)}
-        </button>
+        {user?.isModerator && (
+          <button onClick={handleDeleteSelected}>Delete Selecsted</button>
+        )}
         {qlist.map((q, idx) => (
           <Question
             q={q}
@@ -64,6 +84,7 @@ const QuestionPage = ({
             onDelete={handleDeleteQuestion}
             onSelect={handleSelectQuestion}
             isSelected={selectedQuestions.includes(q._id)}
+            isModerator={user?.isModerator}
           />
         ))}
       </div>

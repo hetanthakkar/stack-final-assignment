@@ -1,10 +1,19 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 import { useFormik } from "formik";
 import { resetPasswordValidation } from "../../validation/validate";
 import "../../Login-Stylesheet/Username.css";
 export default function Reset() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      // User is present in localStorage, so redirect to /home
+      navigate("/");
+    }
+  });
   const formik = useFormik({
     initialValues: {
       password: "",

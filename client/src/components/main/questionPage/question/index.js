@@ -8,6 +8,7 @@ const Question = ({
   onDelete,
   onSelect,
   isSelected,
+  isModerator,
 }) => {
   const handleCheckboxChange = () => {
     onSelect(q._id);
@@ -20,16 +21,23 @@ const Question = ({
   return (
     <div
       className="question right_padding"
-      onClick={() => {
-        handleAnswer(q._id);
-      }}
+      // onClick={() => {
+      //   handleAnswer(q._id);
+      // }}
     >
       <div className="postStats">
         <div>{q.answers.length || 0} answers</div>
-        <div>{q.views} views</div>
+        <div>{q?.views?.length || 0} views</div>
       </div>
       <div className="question_mid">
-        <div className="postTitle">{q.title}</div>
+        <div
+          className="postTitle"
+          onClick={() => {
+            handleAnswer(q._id);
+          }}
+        >
+          {q.title}
+        </div>
         <div className="question_tags">
           {q.tags.map((tag, idx) => (
             <button
@@ -52,14 +60,15 @@ const Question = ({
           {getMetaData(new Date(q.ask_date_time))}
         </div>
       </div>
-      <div className="question_actions">
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={handleCheckboxChange}
-        />
-        <button onClick={{}}>Delete</button>
-      </div>
+      {isModerator && (
+        <div className="question_actions">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={handleCheckboxChange}
+          />
+        </div>
+      )}
     </div>
   );
 };

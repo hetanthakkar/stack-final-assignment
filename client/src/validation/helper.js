@@ -11,6 +11,7 @@ export async function authenticate(username) {
   try {
     return await axios.post("/api/authenticate", { username });
   } catch (error) {
+    console.log("error is");
     return { error: "Username does not exist" };
   }
 }
@@ -34,22 +35,24 @@ export async function getUser({ username }) {
  */
 export async function registerUser(credentials) {
   try {
-    const {
-      data: { msg },
-      status,
-    } = await axios.post(`/api/register`, credentials);
-    let { username, email } = credentials;
-    /**send the email */
-    if (status === 201) {
-      await axios.post("/api/registerMail", {
-        username,
-        userEmail: email,
-        text: msg,
-      });
+    const { data } = await axios.post("/api/register", credentials);
+    if (data.msg == "User Registered Successfully") {
+      login(credentials.username, credentials.password);
     }
-    return Promise.resolve(msg);
+    return data.msg;
   } catch (error) {
-    return Promise.reject({ error });
+    console.error("Error registering user:", error);
+    throw error;
+  }
+}
+
+export async function getLocalUser() {
+  try {
+    const user = localStorage.getItem("user");
+    return JSON.parse(user);
+  } catch (error) {
+    console.error("Error registering user:", error);
+    throw error;
   }
 }
 
@@ -58,23 +61,32 @@ export async function registerUser(credentials) {
  * @param {*} param0
  * @returns
  */
-export async function verifyPassword({ username, password }) {
+export async function login(username, password) {
   try {
     if (username) {
-      const { data } = await axios.post("/api/login", { username, password });
-      return Promise.resolve({ data });
+      console.log("Heu");
+      const response = await axios.post("/api/login", { username, password });
+      if (response.data.token) {
+        localStorage.setItem("user", JSON.stringify(response.data));
+      }
+      return response.data;
+      // return Promise.resolve({ data });
     }
   } catch (error) {
     return Promise.reject({ error: "Password doesn't Match...!" });
   }
 }
-
+export async function logout() {
+  localStorage.removeItem("user");
+}
 /**Update User Profile */
 export async function updateUser(response) {
   try {
-    const token = await localStorage.getItem("token");
+    const user = await localStorage.getItem("user");
+    console.log("object", JSON.parse(user).token);
+
     const data = await axios.put("/api/updateUser", response, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${JSON.parse(user).token}` },
     });
     return Promise.resolve({ data });
   } catch (error) {
@@ -144,7 +156,7 @@ export async function resetPassword({ username, password }) {
  */
 export async function upvoteQuestion(qid) {
   try {
-    const response = await axios.put(`/api/questions/${qid}/upvote`);
+    const response = await axios.put(`/question/${qid}/vote`);
     return response;
   } catch (error) {
     return Promise.reject(error);
@@ -158,7 +170,7 @@ export async function upvoteQuestion(qid) {
  */
 export async function downvoteQuestion(qid) {
   try {
-    const response = await axios.put(`/api/questions/${qid}/downvote`);
+    const response = await axios.put(`/api/question/${qid}/downvote`);
     return response;
   } catch (error) {
     return Promise.reject(error);
@@ -248,7 +260,7 @@ export async function addCommentToAnswer(aid, text, posted_by) {
  */
 export async function deleteCommentFromAnswer(aid, cid) {
   try {
-    const response = await axios.delete(`/api/answers/${aid}/comments/${cid}`);
+    const response = await axios.delete(`/answer/${aid}/comments/${cid}`);
     return response;
   } catch (error) {
     return Promise.reject(error);
@@ -264,7 +276,7 @@ export async function deleteCommentFromAnswer(aid, cid) {
  */
 export async function addCommentToQuestion(qid, text, posted_by) {
   try {
-    const response = await axios.post(`/api/questions/${qid}/comments`, {
+    const response = await axios.post(`/api/question/${qid}/comments`, {
       text,
       posted_by,
     });
@@ -282,9 +294,25 @@ export async function addCommentToQuestion(qid, text, posted_by) {
  */
 export async function deleteCommentFromQuestion(qid, cid) {
   try {
-    const response = await axios.delete(
-      `/api/questions/${qid}/comments/${cid}`
-    );
+    const response = await axios.delete(`/question/${qid}/comments/${cid}`);
+    return response;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+export async function deleteQuestion(qid, cid) {
+  try {
+    const response = await axios.delete(`/question/${qid}`);
+    return response;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+export async function deleteAnswer(qid, id) {
+  try {
+    const response = await axios.delete(`/answer/${qid}/${id}`);
     return response;
   } catch (error) {
     return Promise.reject(error);

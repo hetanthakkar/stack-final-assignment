@@ -20,7 +20,7 @@ async function Auth(req, res, next) {
     const token = authHeader.split(" ")[1];
 
     // Verify the JWT token
-    const decodedToken = await jwt.verify(token, ENV.JWT_SECRET);
+    const decodedToken = await jwt.verify(token, "Hetan");
 
     // Set the decoded user information in the request object
     req.user = decodedToken;
@@ -28,7 +28,7 @@ async function Auth(req, res, next) {
     // Proceed to the next middleware
     next();
   } catch (error) {
-    return res.status(401).json({ error: "Authentication Failed" });
+    return res.status(401).json({ error: "Authentication FailedD" });
   }
 }
 

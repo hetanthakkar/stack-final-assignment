@@ -1,15 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./index.css";
+import { getLocalUser, updateUser } from "../../../validation/helper";
+import axios from "axios";
 
 const UserProfile = () => {
-  const [isEditing, setIsEditing] = useState({
-    name: false,
-    username: false,
-    email: false,
-    about: false,
-    github: false,
-  });
-
   const [user, setUser] = useState({
     name: "Hetan Thakkar",
     username: "johndoe",
@@ -18,6 +12,30 @@ const UserProfile = () => {
     github: "https://github.com/johndoe",
     about:
       "I am a passionate software engineer with a love for building innovative web applications.",
+  });
+  const fetchUser = async () => {
+    let localUser = await getLocalUser();
+    console.log("local", localUser);
+    // const token = localStorage.getItem('token');
+
+    const response = await axios.get(`/api/user/${localUser?.username}`, {
+      headers: {
+        Authorization: `Bearer ${localUser?.token}`,
+      },
+    });
+    // const response = await axios.get(`/api/user/${localUser?.username}`);
+    console.log("this is response", response.data);
+    setUser(response.data);
+  };
+  useEffect(() => {
+    fetchUser();
+  }, []);
+  const [isEditing, setIsEditing] = useState({
+    name: false,
+    username: false,
+    email: false,
+    about: false,
+    github: false,
   });
 
   const toggleEditing = (field) => {
@@ -28,13 +46,37 @@ const UserProfile = () => {
   };
 
   const handleChange = (e, field) => {
+    console.log("oau");
+
     setUser((prevState) => ({
       ...prevState,
       [field]: e.target.value,
     }));
   };
 
-  const disableEditing = (field) => {
+  const disableEditing = async (field) => {
+    let response = await updateUser(user);
+    // console.log("commmm", response, response.data, response.status == 201);
+    if (response.data.status == 201) {
+      // Update the local copy of the user in localStorage
+      // const updatedUser = response.data;
+      // console.log("updated user")
+      const localUser = await getLocalUser();
+      const updatedLocalUser = { ...localUser, ...user };
+      console.log("hiiii", updatedLocalUser, "update");
+      localStorage.setItem("user", JSON.stringify(updatedLocalUser));
+
+      // Update the state with the new user data
+      setUser(updatedLocalUser);
+      fetchUser();
+      setIsEditing((prevState) => ({
+        ...prevState,
+        [field]: false,
+      }));
+    } else {
+      console.error("Error updating user:", response.data);
+    }
+    console.log("Response is", response);
     setIsEditing((prevState) => ({
       ...prevState,
       [field]: false,

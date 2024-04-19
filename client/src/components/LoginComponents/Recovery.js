@@ -1,10 +1,19 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import "../../Login-Stylesheet/Username.css";
 import { Toaster } from "react-hot-toast";
 
 export default function Recovery() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      // User is present in localStorage, so redirect to /home
+      navigate("/");
+    }
+  });
   return (
     <div className="container mx-auto">
       <Toaster position="top-center" reverseOrder={false} />
