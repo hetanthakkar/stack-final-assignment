@@ -14,6 +14,11 @@
   justify-content: space-between;
 }
 
+.question_count{
+  display: flex;
+  color: red;
+}
+
 .right_padding {
   padding: 2% 0 2% 2%;
 }

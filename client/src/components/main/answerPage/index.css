@@ -19,6 +19,10 @@
   align-items: center;
 }
 
+.divi{
+  display: flex;
+}
+
 .comment_dialog_content {
   background-color: #fefefe;
   padding: 20px;
@@ -86,10 +90,30 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+  height: 25px;
 }
 
 .comment-author {
   font-weight: bold;
+}
+
+.CommentForQuestion {
+  display: flex;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-color: #F0EAD6; /* Soft pastel yellow */
+  height: 50px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  font-size: 1.5rem; /* Adjust font size */
+}
+
+.question_count{
+  display: flex;
+  color: red;
 }
 
 .main_div {
@@ -103,8 +127,22 @@
   color: #888;
 }
 
+.comment-title {
+  display: flex;
+  justify-content: center;
+  background-color: #F0EAD6; /* Soft pastel yellow */
+  padding: 10px 20px; /* Adjust padding as needed */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  font-size: 1.5rem; /* Adjust font size */
+  color: #333; /* Text color */
+  text-transform: uppercase; /* Uppercase text */
+  margin-bottom: 10px;
+}
+
 .comment-text {
   line-height: 1.4;
+  width: 200px
 }
 
 .answers-separator {

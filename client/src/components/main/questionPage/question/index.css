@@ -5,17 +5,35 @@
 }
 
 .postStats {
-    color: #bbbbbb;
+    color: #000000; /* Text color */
     text-align: center;
-    width: 10%;
+    /* width: 10%; */
+     background-color: #d6a692;
+     /* Discord's blurple color  */
+    padding: 5px; /* Add padding for spacing */
+    border-radius: 5px;
+    /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    /* Subtle shadow */
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+.question_count{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .question_mid {
     width: 60%;
+    margin-left: 25px;
 }
 
 .postTitle {
-    color: cornflowerblue;
+    color: rgb(20, 32, 55);
+    font-weight: bold;
 }
 
 .question_tags {
@@ -43,8 +61,10 @@
 
 .question_author {
     color: red;
+    margin-right: 25px;
 }
 
 .question_meta {
-    color: #bbbbbb;
+    color: #434343;
+    font-weight: bold;
 }

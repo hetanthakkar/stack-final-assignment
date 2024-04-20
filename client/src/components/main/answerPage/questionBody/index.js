@@ -36,7 +36,9 @@ const QuestionBody = ({
             <div className="question-meta">asked {meta}</div>
           </div>
         </div>
-        <div className="question-content">{handleHyperlink(text)}</div>
+        <div className="handlelink">
+          {handleHyperlink(text)}
+          </div>
       </div>
     </div>
   );

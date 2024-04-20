@@ -13,3 +13,8 @@
 .bluebtn:hover {
   background-color: #2980b9; /* Darker blue on hover */
 }
+
+.question_count{
+  display: flex;
+  background-color: antiquewhite;
+}

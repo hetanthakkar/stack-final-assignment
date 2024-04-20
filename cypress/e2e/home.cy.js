@@ -37,7 +37,7 @@ describe("Home Page 3", () => {
   });
   it("successfully shows total questions number", () => {
     cy.visit("http://localhost:3000");
-    cy.contains("2 questions");
+    cy.contains("4 questions");
   });
 });
 
@@ -90,8 +90,7 @@ describe("Home Page 8", () => {
   });
   it("successfully shows all questions in model", () => {
     const qTitles = [
-      "android studio save string shared preference, start activity and load the saved string",
-      "Programmatically navigate using React router",
+      "Quick question about storage on android",
     ];
     cy.visit("http://localhost:3000");
     cy.get(".postTitle").each(($el, index, $list) => {
@@ -105,8 +104,8 @@ describe("Home Page 9", () => {
     performLogin();
   });
   it("successfully shows all question stats", () => {
-    const answers = ["3 answers", "2 answers"];
-    const views = ["121 views", "10 views"];
+    const answers = ["1 answers","2 answers","3 answers","3 answers"];
+    const views = ["3 views", "3 views", "3 views", "3 views"];
     cy.visit("http://localhost:3000");
     cy.get(".postStats").each(($el, index, $list) => {
       cy.wrap($el).should("contain", answers[index]);
@@ -120,9 +119,9 @@ describe("Home Page 10", () => {
     performLogin();
   });
   it("successfully shows all question authors and date time", () => {
-    const authors = ["saltyPeter", "JoJi John"];
-    const date = ["Jan 01", "Dec 17"];
-    const times = ["21:06", "03:24"];
+    const authors = ["elephantCDE", "monkeyABC", "saltyPeter", "Joji John"];
+    const date = ["Mar 10", "Feb 18", "Jan 10", "Jan 20"];
+    const times = ["14:28:01", "01:02:15", "11:24:30", "03:00:00"];
     cy.visit("http://localhost:3000");
     cy.get(".lastActivity").each(($el, index, $list) => {
       cy.wrap($el).should("contain", authors[index]);
@@ -137,10 +136,8 @@ describe("Home Page 11", () => {
     performLogin();
   });
   it("successfully shows all questions in model in active order", () => {
-    const qTitles = [
-      "android studio save string shared preference, start activity and load the saved string",
-      "Programmatically navigate using React router",
-    ];
+    const qTitles = 
+    ["Programmatically navigate using React router","android studio save string shared preference, start activity and load the saved string", "Quick question about storage on android" , "Object storage for a web application"];
     cy.visit("http://localhost:3000");
     cy.contains("Active").click();
     cy.get(".postTitle").each(($el, index, $list) => {

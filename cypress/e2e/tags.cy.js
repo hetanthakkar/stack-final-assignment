@@ -23,7 +23,7 @@ describe("All Tags 1", () => {
   });
 });
 
-describe("All Tags 2", () => {
+describe("All Tags", () => {
   beforeEach(() => {
     performLogin();
   });
@@ -33,8 +33,12 @@ describe("All Tags 2", () => {
       "javascript",
       "android-studio",
       "shared-preferences",
+      "storage", 
+      "website",
+      "Flutter"
     ];
-    const tagCounts = ["1 question", "2 questions", "1 question", "1 question"];
+    const tagCounts = ["1 questions", "2 questions",
+     "2 questions", "2 questions","2 questions","1 questions", "0 questions"];
     cy.visit("http://localhost:3000");
     cy.contains("Tags").click();
     cy.get(".tagNode").each(($el, index, $list) => {

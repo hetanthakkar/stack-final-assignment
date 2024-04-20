@@ -90,7 +90,7 @@ const handleHyperlink = (text = "") => {
         '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
     );
 
-    return <div dangerouslySetInnerHTML={{ __html: replacedText }} />;
+    return <div className="handlelink" dangerouslySetInnerHTML={{ __html: replacedText }} />;
 };
 
 export { getMetaData, handleHyperlink, validateHyperlink };

@@ -45,22 +45,54 @@ describe("Answer Page 1", () => {
   });
 });
 
+
+// describe("Answer Page 2", () => {
+//   beforeEach(() => {
+//     performLogin();
+//   });
+
+//   it("Answer Page displays expected question text", () => {
+//     const text =
+//       "the alert shows the proper index for the li clicked, and when I alert the variable within the last function I'm calling, moveToNextImage(stepClicked), the same value shows but the animation isn't happening. This works many other ways, but I'm trying to pass the index value of the list item clicked to use for the math to calculate.";
+
+//     cy.contains("Programmatically navigate using React router").click();
+
+//     // Wait for the #question-body-container element to appear
+//     // cy.get("#question-body-container", { timeout: 10000 }).should("exist");
+
+//     // Perform assertions
+//     cy.get("#question-header").should("contain", "3 views");
+//     cy.get("#question-body-container").should("contain", text);
+//     cy.get("#question-body-container").should("contain", "Joji John");
+//     cy.get("#question-body-container").should("contain", "Jan 20, 2022");
+//     cy.get("#question-body-container").should("contain", "03:00:00");
+//   });
+// });
+
+
 describe("Answer Page 2", () => {
   beforeEach(() => {
     performLogin();
   });
+
   it("Answer Page displays expected question text", () => {
     const text =
       "the alert shows the proper index for the li clicked, and when I alert the variable within the last function I'm calling, moveToNextImage(stepClicked), the same value shows but the animation isn't happening. This works many other ways, but I'm trying to pass the index value of the list item clicked to use for the math to calculate.";
-    cy.visit("http://localhost:3000");
+
     cy.contains("Programmatically navigate using React router").click();
-    cy.get("#questionBody").should("contain", "11 views");
-    cy.get("#questionBody").should("contain", text);
-    cy.get("#questionBody").should("contain", "JoJi John");
-    cy.get("#questionBody").should("contain", "Dec 17, 2020");
-    cy.get("#questionBody").should("contain", "3:24");
+
+    // Wait for the question-body-container element to appear
+    cy.get(".question-body-container").should("exist");
+
+    // Perform assertions
+    cy.get(".question-views").should("contain", "3 views");
+    cy.get(".handlelink").should("contain", text);
+    cy.get(".question-author").should("contain", "Joji John");
+    cy.get(".question-meta").should("contain", "Jan 20, 2022 03:00:00");
   });
 });
+
+
 
 describe("Answer Page 3", () => {
   beforeEach(() => {
@@ -73,26 +105,40 @@ describe("Answer Page 3", () => {
     ];
     cy.visit("http://localhost:3000");
     cy.contains("Programmatically navigate using React router").click();
-    cy.get(".answerText").each(($el, index) => {
+    cy.get(".answer-text").each(($el, index) => {
       cy.wrap($el).should("contain", answers[index]);
     });
   });
 });
-
 describe("Answer Page 4", () => {
   beforeEach(() => {
     performLogin();
   });
+
   it("Answer Page displays expected authors", () => {
     const authors = ["hamkalo", "azad"];
-    const date = ["Mar 02", "Jan 31"];
-    const times = ["15:30", "15:30"];
+    const dates = ["Nov 20", "Nov 23"];
+    const times = ["03:24:42", "08:24:00"];
+
     cy.visit("http://localhost:3000");
     cy.contains("Programmatically navigate using React router").click();
-    cy.get(".answerAuthor").each(($el, index) => {
-      cy.wrap($el).should("contain", authors[index]);
-      cy.wrap($el).should("contain", date[index]);
-      cy.wrap($el).should("contain", times[index]);
+
+    // Iterate over each answer
+    cy.get(".answer-author-meta").each(($answer, index) => {
+      const author = authors[index];
+      const date = dates[index];
+      const time = times[index];
+
+      // Within each answer, find the author and meta elements
+      cy.wrap($answer)
+        .find(".answer-author")
+        .should("contain", author);
+
+      cy.wrap($answer)
+        .find(".answer-meta")
+        .should("contain", date)
+        .should("contain", time);
     });
   });
 });
+
