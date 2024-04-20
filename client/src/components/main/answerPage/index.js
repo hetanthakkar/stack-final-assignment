@@ -487,58 +487,21 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
             <div className="comments-section">
               <h2 className="comment-title"> Comments: </h2>
               {questionComments.map((c, id) => (
-<<<<<<< Updated upstream
                 <div>
-                  <div key={c.id} className="comment comment-indented">
-                    <div className="comment-header">
-=======
-<<<<<<< Updated upstream
-                <div key={c.id} className="comment comment-indented">
-                  <div className="comment-header">
+                  <div key={c.id} className="comment comment-indented divi">
                     <p className="comment-author">{c.author}</p>
                     <p className="comment-date">{c.date}</p>
                     <div className="comment-votes-1">
-                      <button onClick={() => handleUpvote("comment", id, c)}>
-                        <FontAwesomeIcon icon={faThumbsUp} /> {c.upvotes}
-=======
-                <div>
-                  <div key={c.id} className="comment comment-indented divi">
-                
->>>>>>> Stashed changes
-                      <p className="comment-author">{c.author}</p>
-                      <p className="comment-date">{c.date}</p>
-                      <div className="comment-votes-1">
-                        <button onClick={() => handleUpvote("comment", c?._id)}>
-                          <FontAwesomeIcon icon={faThumbsUp} />
-                          {c.upvotes?.length}
-                        </button>
-                        <button
-                          onClick={() => handleDownvote("comment", c?._id)}
-                        >
-                          <FontAwesomeIcon icon={faThumbsDown} />
-                          {c.downvotes?.length}
-                        </button>
-                      </div>
-<<<<<<< Updated upstream
-=======
-                    <div className="comment-text">{c.text}</div>
-                    {user?.isModerator && (
-                      <button
-                        onClick={async () => {
-                          console.log("id is", c?._id);
-                          await deleteCommentFromQuestion(qid, c?._id);
-                          await setShouldRefetch(!shouldRefetch);
-                        }}
-                      >
-                        Delete
->>>>>>> Stashed changes
+                      <button onClick={() => handleUpvote("comment", c?._id)}>
+                        <FontAwesomeIcon icon={faThumbsUp} />
+                        {c.upvotes?.length}
                       </button>
-                      <button onClick={() => handleDownvote("comment", c.id)}>
-                        <FontAwesomeIcon icon={faThumbsDown} /> {c.downvotes}
+                      <button onClick={() => handleDownvote("comment", c?._id)}>
+                        <FontAwesomeIcon icon={faThumbsDown} />
+                        {c.downvotes?.length}
                       </button>
->>>>>>> Stashed changes
                     </div>
-                    <p className="comment-text">{c.text}</p>
+                    <div className="comment-text">{c.text}</div>
                     {user?.isModerator && (
                       <button
                         onClick={async () => {
