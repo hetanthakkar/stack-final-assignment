@@ -18,7 +18,7 @@ const Input = ({
       </div>
       {hint && <div className="input_hint">{hint}</div>}
       <input
-        readOnly={editable}
+        readOnly={!editable}
         id={id}
         className="input_input"
         type="text"

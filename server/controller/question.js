@@ -7,6 +7,7 @@ const {
   filterQuestionsBySearch,
 } = require("../utils/question");
 const comments = require("../models/comments");
+const { default: mongoose } = require("mongoose");
 
 const router = express.Router();
 
@@ -56,7 +57,18 @@ const getQuestionById = async (req, res) => {
     res.status(500).json({ msg: "Internal server error" });
   }
 };
-
+// const getQuestionByIdWithoutViews = async (req, res) => {
+//   try {
+//     const question = await Question.findById(req.params.qid);
+//     if (!question) {
+//       return res.status(404).json({ msg: "Question not found" });
+//     }
+//     res.status(200).json(question);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// };
 const addQuestion = async (req, res) => {
   let tags = await Promise.all(
     req.body.tags.map(async (tag) => {
@@ -84,6 +96,12 @@ router.get("/getQuestionById/:id/:userId", (req, res) =>
     return data;
   })
 );
+
+// router.get("/getQuestionById/:id", (req, res) =>
+//   getQuestionByIdWithoutViews(req, res).then((data) => {
+//     return data;
+//   })
+// );
 
 router.post("/addQuestion", (req, res) =>
   addQuestion(req, res).then((data) => {
@@ -206,5 +224,40 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ msg: "Internal server error" });
   }
 });
+
+const getQuestionByIdWithoutViews = async (req, res) => {
+  console.log(req.params);
+  try {
+    const questionId = req.params.id;
+    const userId = req.params.userId; // Assuming you have middleware to get the current user ID
+    console.log("user id", questionId, userId);
+    let question = await Question.findOneAndUpdate(
+      {
+        _id: questionId,
+        views: { $ne: userId }, // Check if the user ID is not already present in the views array
+      },
+      {
+        $push: { views: userId }, // Add the user ID to the views array
+        $inc: { viewCount: 1 }, // Increment the viewCount field
+      },
+      { new: true }
+    );
+    console.log("Came here", question);
+
+    if (!question) {
+      // If the user ID is already present in the views array, fetch the question without updating
+      question = await Question.findById(questionId);
+    }
+
+    question = await question.populate("answers");
+    res.status(200);
+    res.json(question);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Internal server error" });
+  }
+};
+
+router.get("/getQuestionById/:qid", getQuestionByIdWithoutViews);
 
 module.exports = router;
