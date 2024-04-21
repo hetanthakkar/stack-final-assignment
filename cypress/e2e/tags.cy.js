@@ -1,3 +1,9 @@
+describe("Database Setup", () => {
+  it("Populates and removes the database", () => {
+    cy.exec("node ./server/remove_db.js mongodb://127.0.0.1:27017/fake_so");
+    cy.exec("node ./server/populate_db.js mongodb://127.0.0.1:27017/fake_so");
+  });
+});
 const performLogin = () => {
   cy.visit("http://localhost:3000/login");
   cy.get('input[name="username"]').clear();
@@ -33,12 +39,19 @@ describe("All Tags", () => {
       "javascript",
       "android-studio",
       "shared-preferences",
-      "storage", 
+      "storage",
       "website",
-      "Flutter"
+      "Flutter",
     ];
-    const tagCounts = ["1 questions", "2 questions",
-     "2 questions", "2 questions","2 questions","1 questions", "0 questions"];
+    const tagCounts = [
+      "1 questions",
+      "2 questions",
+      "2 questions",
+      "2 questions",
+      "2 questions",
+      "1 questions",
+      "0 questions",
+    ];
     cy.visit("http://localhost:3000");
     cy.contains("Tags").click();
     cy.get(".tagNode").each(($el, index, $list) => {
@@ -58,7 +71,7 @@ describe("All Tags 3", () => {
     cy.contains("react").click();
     cy.contains("Programmatically navigate using React router");
     cy.contains("2 answers");
-    cy.contains("3 views");
+    cy.contains("2 views");
     cy.contains("Joji John");
     cy.contains("Jan 20");
     cy.contains("03:00");

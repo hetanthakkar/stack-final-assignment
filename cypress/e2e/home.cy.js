@@ -1,3 +1,9 @@
+describe("Database Setup", () => {
+  it("Populates and removes the database", () => {
+    cy.exec("node ./server/remove_db.js mongodb://127.0.0.1:27017/fake_so");
+    cy.exec("node ./server/populate_db.js mongodb://127.0.0.1:27017/fake_so");
+  });
+});
 const performLogin = () => {
   cy.visit("http://localhost:3000/login");
   cy.get('input[name="username"]').clear();
@@ -91,6 +97,9 @@ describe("Home Page 8", () => {
   it("successfully shows all questions in model", () => {
     const qTitles = [
       "Quick question about storage on android",
+      "Object storage for a web application",
+      "android studio save string shared preference, start activity and load the saved string",
+      "Programmatically navigate using React router",
     ];
     cy.visit("http://localhost:3000");
     cy.get(".postTitle").each(($el, index, $list) => {
@@ -104,8 +113,8 @@ describe("Home Page 9", () => {
     performLogin();
   });
   it("successfully shows all question stats", () => {
-    const answers = ["1 answers","2 answers","3 answers","3 answers"];
-    const views = ["3 views", "3 views", "3 views", "3 views"];
+    const answers = ["1 answers", "2 answers", "3 answers", "2 answers"];
+    const views = ["2 views", "2 views", "2 views", "2 views"];
     cy.visit("http://localhost:3000");
     cy.get(".postStats").each(($el, index, $list) => {
       cy.wrap($el).should("contain", answers[index]);
@@ -136,8 +145,12 @@ describe("Home Page 11", () => {
     performLogin();
   });
   it("successfully shows all questions in model in active order", () => {
-    const qTitles = 
-    ["Programmatically navigate using React router","android studio save string shared preference, start activity and load the saved string", "Quick question about storage on android" , "Object storage for a web application"];
+    const qTitles = [
+      "Programmatically navigate using React router",
+      "android studio save string shared preference, start activity and load the saved string",
+      "Quick question about storage on android",
+      "Object storage for a web application",
+    ];
     cy.visit("http://localhost:3000");
     cy.contains("Active").click();
     cy.get(".postTitle").each(($el, index, $list) => {

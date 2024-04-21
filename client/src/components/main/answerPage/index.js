@@ -492,18 +492,27 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
                     <p className="comment-author">{c.author}</p>
                     <p className="comment-date">{c.date}</p>
                     <div className="comment-votes-1">
-                      <button onClick={() => handleUpvote("comment", c?._id)}>
+                      <button
+                        id="upvote-question-comments"
+                        onClick={() => handleUpvote("comment", c?._id)}
+                      >
                         <FontAwesomeIcon icon={faThumbsUp} />
                         {c.upvotes?.length}
                       </button>
-                      <button onClick={() => handleDownvote("comment", c?._id)}>
+                      <button
+                        id="downvote-question-comments"
+                        onClick={() => handleDownvote("comment", c?._id)}
+                      >
                         <FontAwesomeIcon icon={faThumbsDown} />
                         {c.downvotes?.length}
                       </button>
                     </div>
-                    <div className="comment-text">{c.text}</div>
+                    <div id="question-comment" className="comment-text">
+                      {c.text}
+                    </div>
                     {user?.isModerator && (
                       <button
+                        id="delete-question-comment"
                         onClick={async () => {
                           console.log("id is", c?._id);
                           await deleteCommentFromQuestion(qid, c?._id);
@@ -551,11 +560,17 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
             <div key={idx} className="answer-container">
               <div className="answersForQuestion">
                 <div className="comment-votes-1">
-                  <button onClick={() => handleUpvote("answer", idx)}>
+                  <button
+                    id="upvote-answer"
+                    onClick={() => handleUpvote("answer", idx)}
+                  >
                     {a?.upvotes?.length || 0}
                     <FontAwesomeIcon icon={faThumbsUp} />
                   </button>
-                  <button onClick={() => handleDownvote("answer", idx)}>
+                  <button
+                    id="downvote-answer"
+                    onClick={() => handleDownvote("answer", idx)}
+                  >
                     {a?.downvotes?.length || 0}
                     <FontAwesomeIcon icon={faThumbsDown} />
                   </button>
@@ -586,12 +601,14 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
                         <div className="main_div">
                           <div className="comment-votes-1">
                             <button
+                              id="upvote-answer-comment"
                               onClick={() => handleUpvote("comment", c?._id)}
                             >
                               {c?.upvotes?.length || 0}{" "}
                               <FontAwesomeIcon icon={faThumbsUp} />
                             </button>
                             <button
+                              id="downvote-answer-comment"
                               onClick={() => handleDownvote("comment", c?._id)}
                             >
                               {c?.downvotes?.length || 0}{" "}
@@ -603,10 +620,13 @@ const AnswerPage = ({ qid, handleNewQuestion, handleNewAnswer }) => {
                               <p className="comment-author">{c.author}</p>
                               <p className="comment-date">{c.date}</p>
                             </div>
-                            <p className="comment-text">{c.text}</p>
+                            <p id="answer-comment" className="comment-text">
+                              {c.text}
+                            </p>
                           </div>
                           {user?.isModerator && (
                             <button
+                              id="delete-answer-comment"
                               onClick={() =>
                                 handleDeleteAnswerComment(a?._id, c?._id)
                               }

@@ -36,8 +36,8 @@ function tagCreate(name) {
   return tag.save();
 }
 
-function answerCreate(text, ans_by, ans_date_time) {
-  let answerdetail = { text: text };
+function answerCreate(text, ans_by, ans_date_time, comments) {
+  let answerdetail = { text: text, comments: comments };
   if (ans_by != false) answerdetail.ans_by = ans_by;
   if (ans_date_time != false) answerdetail.ans_date_time = ans_date_time;
 
@@ -118,8 +118,8 @@ const populate = async () => {
   let t6 = await tagCreate("website");
   let t7 = await tagCreate("Flutter");
   let u1 = await createUser(
-    "Hetan NA Thakkar",
-    "password123",
+    "moderator",
+    "moderator@123123",
     "hetaan.doe@example.com"
   );
   let u2 = await createUser("Devam JAA", "password123", "devs.doe@example.com");
@@ -128,15 +128,18 @@ const populate = async () => {
   let c1 = await commentCreate("Comment1", u1, new Date(), [u1, u3]);
   let c2 = await commentCreate("Comment2", u3, new Date(), [u1, u2]);
   let c3 = await commentCreate("Comment3", u2, new Date(), [u1, u2, u3]);
+  let c4 = await commentCreate("Comment4", u2, new Date(), [u1, u2, u3]);
   let a1 = await answerCreate(
     "React Router is mostly a wrapper around the history library. history handles interaction with the browser's window.history for you with its browser and hash histories. It also provides a memory history which is useful for environments that don't have a global history. This is particularly useful in mobile app development (react-native) and unit testing with Node.",
     "hamkalo",
-    new Date("2023-11-20T03:24:42")
+    new Date("2023-11-20T03:24:42"),
+    []
   );
   let a2 = await answerCreate(
     "On my end, I like to have a single history object that I can carry even outside components. I like to have a single history.js file that I import on demand, and just manipulate it. You just have to change BrowserRouter to Router, and specify the history prop. This doesn't change anything for you, except that you have your own history object that you can manipulate as you want. You need to install history, the library used by react-router.",
     "azad",
-    new Date("2023-11-23T08:24:00")
+    new Date("2023-11-23T08:24:00"),
+    [c1, c4]
   );
   let a3 = await answerCreate(
     "Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background.",
@@ -166,8 +169,10 @@ const populate = async () => {
   let a8 = await answerCreate(
     "Store data in a SQLLite database.",
     "ihba001",
-    new Date("2023-03-22T21:17:53")
+    new Date("2023-03-22T21:17:53"),
+    [c3]
   );
+
   await questionCreate(
     "Programmatically navigate using React router",
     "the alert shows the proper index for the li clicked, and when I alert the variable within the last function Im calling, moveToNextImage(stepClicked), the same value shows but the animation isnt happening. This works many other ways, but Im trying to pass the index value of the list item clicked to use for the math to calculate.",
@@ -176,9 +181,9 @@ const populate = async () => {
     "Joji John",
     new Date("2022-01-20T03:00:00"),
     [a1, a2],
-    [a1, a2, a3],
+    [a1, a2, a8],
     [],
-    [c2]
+    []
   );
   await questionCreate(
     "android studio save string shared preference, start activity and load the saved string",
@@ -190,7 +195,7 @@ const populate = async () => {
     [a3, a2],
     [a1, a2],
     [],
-    [c3, c2]
+    [c3]
   );
   await questionCreate(
     "Object storage for a web application",

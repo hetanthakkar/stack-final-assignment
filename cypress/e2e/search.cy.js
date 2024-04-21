@@ -1,3 +1,9 @@
+describe("Database Setup", () => {
+  it("Populates and removes the database", () => {
+    cy.exec("node ./server/remove_db.js mongodb://127.0.0.1:27017/fake_so");
+    cy.exec("node ./server/populate_db.js mongodb://127.0.0.1:27017/fake_so");
+  });
+});
 const performLogin = () => {
   cy.visit("http://localhost:3000/login");
   cy.get('input[name="username"]').clear();
@@ -33,8 +39,8 @@ describe("Search 2", () => {
   });
   it("Search string matches tag and text", () => {
     const qTitles = [
-      "android studio save string shared preference, start activity and load the saved string",
       "Programmatically navigate using React router",
+      "android studio save string shared preference, start activity and load the saved string",
     ];
     cy.visit("http://localhost:3000");
     cy.get("#searchBar").type("navigation [React]{enter}");
@@ -50,8 +56,9 @@ describe("Search 3", () => {
   });
   it("Output of the search should be in newest order by default", () => {
     const qTitles = [
-      "android studio save string shared preference, start activity and load the saved string",
       "Programmatically navigate using React router",
+      "Quick question about storage on android",
+      "android studio save string shared preference, start activity and load the saved string",
     ];
     cy.visit("http://localhost:3000");
     cy.get("#searchBar").type("android [react]{enter}");
@@ -68,6 +75,7 @@ describe("Search 4", () => {
   it("Output of the search should show number of results found", () => {
     const qTitles = [
       "Programmatically navigate using React router",
+      "Quick question about storage on android",
       "android studio save string shared preference, start activity and load the saved string",
     ];
     cy.visit("http://localhost:3000");
@@ -82,8 +90,10 @@ describe("Search 5", () => {
   });
   it("Output of the empty search should show all results ", () => {
     const qTitles = [
-      "Programmatically navigate using React router",
+      "Quick question about storage on android",
+      "Object storage for a web application",
       "android studio save string shared preference, start activity and load the saved string",
+      "Programmatically navigate using React router",
     ];
     cy.visit("http://localhost:3000");
     cy.get("#searchBar").type("{enter}");

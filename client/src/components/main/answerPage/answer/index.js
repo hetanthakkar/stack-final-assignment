@@ -28,7 +28,11 @@ const Answer = ({
           <div className="answer-meta">{meta}</div>
         </div>
       </div>
-      {isModerator && <button onClick={handleDelete}>Delete</button>}
+      {isModerator && (
+        <button id="delete-answer" onClick={handleDelete}>
+          Delete
+        </button>
+      )}
     </div>
   );
 };

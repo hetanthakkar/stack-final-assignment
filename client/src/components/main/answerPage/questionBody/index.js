@@ -18,10 +18,18 @@ const QuestionBody = ({
   return (
     <div className="question-body-container">
       <div className="comment-votes-1">
-        <button className="upvote" onClick={() => handleUpvote("question")}>
+        <button
+          id="upvote-question"
+          className="upvote"
+          onClick={() => handleUpvote("question")}
+        >
           {upvotes} <FontAwesomeIcon icon={faThumbsUp} />
         </button>
-        <button className="downvote" onClick={() => handleDownvote("question")}>
+        <button
+          id="downvote-question"
+          className="downvote"
+          onClick={() => handleDownvote("question")}
+        >
           {downvotes} <FontAwesomeIcon icon={faThumbsDown} />
         </button>
       </div>
@@ -36,9 +44,7 @@ const QuestionBody = ({
             <div className="question-meta">asked {meta}</div>
           </div>
         </div>
-        <div className="handlelink">
-          {handleHyperlink(text)}
-          </div>
+        <div className="handlelink">{handleHyperlink(text)}</div>{" "}
       </div>
     </div>
   );
