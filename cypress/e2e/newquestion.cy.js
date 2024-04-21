@@ -2,6 +2,7 @@ describe("Database Setup", () => {
   it("Populates and removes the database", () => {
     cy.exec("node ./server/remove_db.js mongodb://127.0.0.1:27017/fake_so");
     cy.exec("node ./server/populate_db.js mongodb://127.0.0.1:27017/fake_so");
+    cy.clearLocalStorage("user");
   });
 });
 const performLogin = () => {
