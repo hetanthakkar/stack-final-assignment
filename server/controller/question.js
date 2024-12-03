@@ -24,34 +24,36 @@ const getQuestionsByFilter = async (req, res) => {
     res.status(500).json({ msg: "Internal server error" });
   }
 };
-
 const getQuestionById = async (req, res) => {
-  console.log(req.params);
   try {
     const questionId = req.params.id;
-    const userId = req.params.userId; // Assuming you have middleware to get the current user ID
-    console.log("user id", questionId, userId);
-    let question = await Question.findOneAndUpdate(
-      {
-        _id: questionId,
-        views: { $ne: userId }, // Check if the user ID is not already present in the views array
-      },
-      {
-        $push: { views: userId }, // Add the user ID to the views array
-        $inc: { viewCount: 1 }, // Increment the viewCount field
-      },
-      { new: true }
-    );
-    console.log("Came here", question);
+    const userId = req.params.userId;
 
+    // Fetch the question first to ensure it exists
+    const question = await Question.findById(questionId);
     if (!question) {
-      // If the user ID is already present in the views array, fetch the question without updating
-      question = await Question.findById(questionId);
+      return res.status(404).json({ msg: "Question not found" });
     }
 
-    question = await question.populate("answers");
-    res.status(200);
-    res.json(question);
+    // Ensure views is an array if it doesn't exist
+    if (!Array.isArray(question.views)) {
+      question.views = [];
+    }
+
+    // Add userId to views and increment viewCount
+    if (!question.views.includes(userId)) {
+      question.views.push(userId);
+      question.viewCount += 1;
+      await question.save();
+    }
+
+    // Populate the necessary fields
+    const populatedQuestion = await Question.findById(questionId)
+      .populate("answers")
+      .populate("tags")
+      .populate("comments");
+
+    res.status(200).json(populatedQuestion);
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: "Internal server error" });
@@ -70,21 +72,35 @@ const getQuestionById = async (req, res) => {
 //   }
 // };
 const addQuestion = async (req, res) => {
-  let tags = await Promise.all(
-    req.body.tags.map(async (tag) => {
-      return await addTag(tag);
-    })
-  );
-  let question = await Question.create({
-    title: req.body.title,
-    text: req.body.text,
-    asked_by: req.body.asked_by,
-    ask_date_time: req.body.ask_date_time,
-    tags: tags,
-  });
-  res.json(question);
-};
+  try {
+    let tags = await Promise.all(
+      req.body.tags.map(async (tag) => {
+        return await addTag(tag);
+      })
+    );
 
+    let question = await Question.create({
+      title: req.body.title,
+      text: req.body.text,
+      asked_by: req.body.asked_by,
+      ask_date_time: req.body.ask_date_time,
+      tags: tags,
+      views: [], // Initialize as an empty array
+      viewCount: 0, // Initialize view count to 0
+      answers: [], // Initialize as an empty array
+      upvotes: [], // Initialize as an empty array
+      downvotes: [], // Initialize as an empty array
+      comments: [], // Initialize as an empty array
+    });
+
+    res.status(201).json(question);
+  } catch (error) {
+    console.error("Error adding question:", error);
+    res
+      .status(500)
+      .json({ msg: "Error creating question", error: error.message });
+  }
+};
 router.get("/getQuestion", (req, res) => {
   getQuestionsByFilter(req, res).then((data) => {
     return data;
